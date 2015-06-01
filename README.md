@@ -4,14 +4,14 @@
 ## Introduction
 The repository consists of two folders `webflow` and `ticket`. Explanation of how it works and what's inside the folder are provided below.
 
-##webflow:##   
+**webflow:**   
 - This folder uses a webflow record of a ticket system website, called it `webflowdata.xlsx`.         
 - The whole process of the analysis and thorough detail of the dataset used was shown in the `webflow.md` file. 
-- The `webflow.R` contains just the R code for the analysis, though may not be as organized as well-explained.                    
+- The `webflow.R` contains just the R code for the analysis, though may not be as organized as well-explained.                  
 - `webflow_files` contains the graph that the analysis generated.                
 
-##ticket:##          
-- This folder uses the ticket selling record to one of the concert provided by the same ticket system as above. The dataset is called `ticketdata.csv`
+**ticket:**          
+- This folder uses the ticket selling record to one of the concert provided by the same ticket system as above. The dataset is called `ticketdata.csv`.
 - It also contains a .md file `ticket.md` that shows the entire steps for doing the analysis(Also contains description of the dataset) and the partial R code for that `ticket.R`.
 - Apart from that it also has a `seat.png file` which shows the structure of the arena in which the concert was held.
 - `processdata.csv` is a subset of the original dataset and will be used by `image.R`.
