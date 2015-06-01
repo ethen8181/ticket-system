@@ -1,0 +1,194 @@
+---
+title: "Exploratory Data Analysis on Ticket System"
+output:
+  html_document:
+    keep_md: yes
+  pdf_document: default
+---
+
+## Dataset
+Into the New World, was the 1st Asia conert tour by the South Korean girl's band, SNSD (Girl Generation). The concert was held at the Taipei Arena in Taiwan on 2010/10/17. This dataset is from the ticket system that was in charge of selling the tickets to that concert. The raw data consists of 7069 rows and 30 variables. 
+Each variables has a very descriptive header indicating what the variables mean, so we'll only go through the ones that we will be using in this essay.
+
+- `IDENTITY`: The identity card ID for the person that made the purchase, the last three numbers have been deleted for the sake of customer privacy.
+- `CREATE_DATE`: The time when the person made the purchase.(This part should require some cleaning, as it would record 16:00 as 4 p.m., thus we should delete the p.m. and add 12 hours to the timeline that has p.m. in them).
+- `T_STANDARD_TICKET_TYPE_NAME`: Indicating whether that person is a member of the ticket system or not.
+- `SEAT_REGION_NAME`: Stating the seat section in the Arena for the purchased ticket.
+- `SEX` : Quite straightforward, the person's gender.
+
+## Sypnosis
+For this essay, we would like to answer two main question.    
+1. Look at the timeline of when the tickets were sold, and see if there are differences between member and non-members.     
+2. See if there are differences between male and female when it comes to the amount they spent on the tickets.
+
+## Environment Setting
+```{r}
+library(plyr)
+library(tidyr)
+library(ggplot2)
+library(data.table)
+library(RColorBrewer)
+suppressMessages( library(dplyr) )
+
+setwd("C:/Users/ASUS/ticket-system/ticket")
+Sys.setlocale("LC_TIME", "English")
+
+ticketdata1 <- read.csv( "ticketdata.csv", stringsAsFactors = FALSE )
+
+```
+## Data Preprocessing
+- The column `CREATE_DATE` is the only column that requires preprocessing, the original format looks something like 2010/10/14 p.m. 11:25:58. Therefore we should turn it into a date, and also add twelve hours to the rows that have p.m. in them. The clean dataset is referred to as `ticketdata2`.
+```{r}
+
+# Step 1 : separate the date row
+ticketdata1 <- separate(ticketdata1, CREATE_DATE, into = c( "date1", "date2", "date3" ), sep = " " ) 
+# Step 2 : first ignore the p.m. part and create the date 
+ticketdata1$my_date <- strptime( paste( ticketdata1$date1, ticketdata1$date3, sep = " " ), 
+                                 format = "%Y/%m/%d %H:%M:%S" )  
+# Step 3 : add 12 hours(add in unit of seconds) to the data that are in the afternoon (i.e. p.m.)
+ticketdata1$my_date[ ticketdata1$date2 == "p.m." ] <- ticketdata1$my_date[ ticketdata1$date2 == "p.m." ] + 12*60*60
+# Step 4 : delete the original three columns that were used to create my_date column
+# obtain the column num 
+which( names(ticketdata1) == "date1" )
+ticketdata2 <- ticketdata1[ -c( 8:10 ) ]
+# Step 5 : Change the column names to shorter ones without losing their original descriptive meaning
+setnames(ticketdata2, c( "T_STANDARD_TICKET_TYPE_NAME", "SEAT_REGION_NAME" ), c("Ticket_Type", "Seat_Type") )
+str(ticketdata2)
+```
+
+## Question 1 : See how each the tickets of each section were sold out through time, and are there differences in the pattern between those who are members and non-members?
+#### 1.1. Select the rows needed and order them by the timeline. 
+- `my_date`: Showing the timeline in which the tickets where purchased.
+- `Seat_Type`: The floor and the section for that ticket.
+- `Ticket_Type`: Indicating whether the purchaser is a member of the ticket system or not.
+-  The dataset after this stage is called `ticketdata3`.
+```{r}
+
+# select the columns needed
+ticketdata3 <- select( ticketdata2, my_date, Seat_Type, Ticket_Type )
+# order by time
+ticketdata3 <- ticketdata3[order(ticketdata3$my_date),]
+head(ticketdata3)
+
+```
+
+#### 1.2. Creating functions.
+- `process`: Count every distinct Seat_Type by time. To be explicit, it will show the number of ticket left after each purchases(each type of seat is counted separately).
+- `ticketsoldplot`: Plot the graph that shows the pattern for tickets sold in each section through time.  
+```{r}
+
+# process : it does the counting for the ticket left for each Seat_Type
+process <- function( dataset )
+{
+    tickettype <- distinct( select( dataset, Seat_Type ) )
+    
+    tmp <- vector( mode = "list", length = nrow(tickettype) )
+    for( i in 1:nrow(tickettype) )
+    {
+        data  <- data.frame()
+        data  <- subset( dataset, Seat_Type == tickettype[i,] )
+        
+        data$count <- ( nrow(data)-1 ):0
+        tmp[[i]] <- data
+    } 
+    data1 <- do.call( rbind, tmp )
+    data1
+} 
+# ticketsoldplot : function that does the plotting
+ticketsoldplot <- function( dataset, ... )
+{
+    ggplot( dataset, aes( x = my_date, y = count, color = Seat_Type ) ) + geom_line( size = 1 ) +
+        facet_wrap( ~Ticket_Type, ncol = 1, scales = "free" ) + xlab( "date" ) + theme(
+            strip.text   = element_text( face = "bold", size = 16 ),
+            strip.background = element_rect( fill = "lightblue" ),
+            axis.title   = element_text( size = 14 ),
+            axis.text    = element_text( size = 10 ),
+            legend.title = element_text( size = 14 ),
+            legend.text  = element_text( size = 12 )) 
+}    
+
+```
+
+- `process` the `ticketdata3`, called it `ticketdata4` and write it out.
+- This dataset will be used by `image.R`, it will be explained later in the document. 
+
+```{r, fig.height = 10, fig.width = 20}
+
+ticketdata4 <- process(ticketdata3)
+if( !file.exists("processdata.csv") )
+{
+    write.table( ticketdata4, "processdata.csv", sep = ",", row.names = FALSE )   
+}    
+
+```
+#### 1.3. Plot line graph to see how each section of the tickets were sold out through time. 
+- Because there are a total of 27 different seat section, plotting it all in a single graph might be a bit confusing, therefore we split it into three graphs, separating them into the section on Floor 2, Floor 3 and Floor section.
+
+```{r}
+# extract the 3F, 2F and B1 each into one plot
+ticketdata4_2f <- ticketdata4[ grep( "Floor([2])+Section.*", ticketdata4$Seat_Type ), ]
+ticketdata4_3f <- ticketdata4[ grep( "Floor([3])+Section.*", ticketdata4$Seat_Type ), ]
+ticketdata4_B1 <- ticketdata4[ grep( "FloorB1",  ticketdata4$Seat_Type ), ]
+
+```
+
+```{r, fig.height = 10, fig.width = 20}
+# plot for the section that are on Floor 2
+ticketsoldplot(ticketdata4_2f)
+# plot for the section that are on Floor 3
+ticketsoldplot(ticketdata4_3f)
+# plot for the Floor Section
+ticketsoldplot(ticketdata4_B1) 
+
+```
+
+- **Note1:** The first interesting fact from the graph is that, if you look closely at the timeline of when the tickets were bought, members of the ticket system seems to have had privileges to purchase the tickets before non-members.
+- **Note2:** Another thing is, the interval of the timeline for the members are quite short, ending only in a couple of hours, while non-members lasted for days.
+
+
+#### 1.4. Explanation of image.R 
+- What it does is, you pass a specific timeline to the function `image`, and it will print out a graph showing you the total number of seats for each section in the beginning, and the numbers of seats that are still available for each section at the timeline you specified.
+
+```{r, fig.height = 10, fig.width = 20}
+
+# An example of the timeline format is provided below.
+timeline <- "2010-09-20 15:11:25"
+source("image.R")
+image(timeline)
+
+```
+
+## Question 2 : How much money do each person spent on buying tickets? Is there a difference between male and female?
+
+#### 2.1. A histgram of the amount of purchases per person
+- Calculate the amount of purchase for each person. Save this data to `purchasedata`.
+```{r, fig.height = 10, fig.width = 20}
+purchasedata <- aggregate( PRICE ~ IDENTITY, ticketdata2, sum )
+head(purchasedata)
+
+ggplot( purchasedata, aes( PRICE ) ) + geom_bar( color = "black", fill = "lightskyblue2", width = 0.8 ) +
+    ggtitle( "Purchase Amount per Person" ) + xlab( "price" ) + theme( 
+        plot.title = element_text( size = 28, face = "bold" ),
+        axis.title = element_text( size = 18 ),
+        axis.text  = element_text( size = 12 ))  
+```
+- **Note:** Hmmm.... Most of the customers seems to spent under 10 thousand dollars when purchasing the tickets. Originally, I thought the amount would be bigger, because a lot of people might chose to purchase the tickets together to save the hassle of going through the purchasing process.
+
+#### 2.2. Boxplot of the amount of Purchase per person by gender
+- Calculate the amount of purchase for each person, create a new data.frame adding the SEX column and only save the unique rows to `genderdata`.
+```{r, fig.height = 10, fig.width = 20}
+genderprice <- ave( ticketdata2[,"PRICE"], ticketdata2[,"IDENTITY"], FUN = sum )
+genderdata  <- data.frame( identity = ticketdata2$IDENTITY, price = genderprice, gender = ticketdata2$SEX )
+genderdata  <- unique(genderdata)
+head(genderdata)
+ggplot( genderdata, aes( gender, price, fill = gender ) ) + geom_boxplot() +
+    ggtitle( "Amount of Purchase by Gender" ) + theme(
+        plot.title   = element_text( size = 24, face = "bold" ),
+        axis.title   = element_text( size = 18 ),
+        axis.text    = element_text( size = 12 ),
+        legend.title = element_text( size = 16 ),
+        legend.text  = element_text( size = 14 ))
+
+```
+- **Note:** From the boxplot, there doesn't seem to be much of a difference between the two genders when it comes to the amount spent on purchasing the tickets. Thought boys would be more fond of this concert, because it is after all Girls Generation. 
+
