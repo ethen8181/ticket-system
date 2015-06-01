@@ -145,9 +145,9 @@ process <- function( dataset )
     data1
 } 
 # ticketsoldplot : function that does the plotting
-ticketsoldplot <- function( dataset, ... )
+ticketsoldplot <- function( dataset )
 {
-    ggplot( dataset, aes( x = my_date, y = count, color = Seat_Type ) ) + geom_line( size = 1 ) +
+    ggplot( dataset, aes( x = my_date, y = percentage, color = Seat_Type ) ) + geom_line( size = 1 ) +
         facet_wrap( ~Ticket_Type, ncol = 1, scales = "free" ) + xlab( "date" ) + theme(
             strip.text   = element_text( face = "bold", size = 16 ),
             strip.background = element_rect( fill = "lightblue" ),
@@ -160,14 +160,34 @@ ticketsoldplot <- function( dataset, ... )
 
 - `process` the `ticketdata3`, called it `ticketdata4` and write it out.
 - This dataset will be used by `image.R`, it will be explained later in the document. 
-
+- Another important step here is, due to fact that the total tickets available for each section are different, therefore we will normalize it to percentage of tickets sold through time by dividing the count with that section's total ticket number. By doing this we will have a clearer picture of which section was sold out more quickly.
 
 ```r
 ticketdata4 <- process(ticketdata3)
 if( !file.exists("processdata.csv") )
 {
     write.table( ticketdata4, "processdata.csv", sep = ",", row.names = FALSE )   
-}    
+}
+# percentage of the tickets left for each section
+ticketdata4$percentage <- ticketdata4$count/ ( ave(ticketdata4$count, ticketdata4$Seat_Type, FUN = max ) )
+head(ticketdata4)
+```
+
+```
+##                  my_date             Seat_Type Ticket_Type count
+## 6431 2010-09-18 13:18:55 Floor2Sectionyellow2B      member   198
+## 5002 2010-09-18 14:02:16 Floor2Sectionyellow2B      member   197
+## 763  2010-09-18 14:11:25 Floor2Sectionyellow2B      member   196
+## 764  2010-09-18 14:11:25 Floor2Sectionyellow2B      member   195
+## 6110 2010-09-18 14:13:00 Floor2Sectionyellow2B      member   194
+## 6111 2010-09-18 14:13:00 Floor2Sectionyellow2B      member   193
+##      percentage
+## 6431  1.0000000
+## 5002  0.9949495
+## 763   0.9898990
+## 764   0.9848485
+## 6110  0.9797980
+## 6111  0.9747475
 ```
 #### 1.3. Plot line graph to see how each section of the tickets were sold out through time. 
 - Because there are a total of 27 different seat section, plotting it all in a single graph might be a bit confusing, therefore we split it into three graphs, separating them into the section on Floor 2, Floor 3 and Floor section.

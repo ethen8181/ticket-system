@@ -79,8 +79,8 @@ image <- function( timeline )
             if( !(uniqueticket[i] %in% countdata$Seat_Type) )
             {
                 tmp2[[i]] <- ticketdata4[ , c( 2, 4 ) ] %>% 
-                    filter( Seat_Type == uniqueticket[i] ) %>% 
-                    top_n( 1, count )    
+                             filter( Seat_Type == uniqueticket[i] ) %>% 
+                             top_n( 1, count )    
             }    
         }
         

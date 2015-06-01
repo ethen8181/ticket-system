@@ -85,7 +85,7 @@ process <- function( dataset )
 # function that does the plotting
 ticketsoldplot <- function( dataset, ... )
 {
-    ggplot( dataset, aes( x = my_date, y = count, color = Seat_Type ) ) + geom_line( size = 1 ) + 
+    ggplot( dataset, aes( x = my_date, y = percentage, color = Seat_Type ) ) + geom_line( size = 1 ) + 
         facet_wrap( ~Ticket_Type, ncol = 1, scales = "free" ) + theme(
             strip.text   = element_text( face = "bold", size = 16 ),
             strip.background = element_rect( fill = "lightblue" ),
@@ -100,6 +100,10 @@ ticketsoldplot <- function( dataset, ... )
 # ticketdata4 : all kinds, total of 27 Seat_Type type can be quite unpleasant to look at
 # tickettype_all : every kind of seat in one plot
 ticketdata4    <- process(ticketdata3)
+
+# percentage of the tickets left for each section
+ticketdata4$percentage <- ticketdata4$count/ ( ave(ticketdata4$count, ticketdata4$Seat_Type, FUN = max ) )
+
 cols <- brewer.pal( 12, "Set3" )
 pal1 <- colorRampPalette(cols)
 color <- pal1( length( unique(ticketdata4$Seat_Type) ) )
