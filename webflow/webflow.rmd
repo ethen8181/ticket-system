@@ -49,7 +49,7 @@ Sys.setlocale("LC_TIME", "English")
 - Read in the files, and take a look at the structure of the data
 ```{r}
 
-webflowdata <- read.xlsx2( "webflowdata.xlsx", 2, colClass = c( rep( "numeric", 6 ) ), stringsAsFactors = FALSE ) 
+webflowdata <- read.xlsx2( "webflowdata.xlsx", 2, colClass = c( "character", rep("numeric", 5) ), stringsAsFactors = FALSE ) 
 str(webflowdata)
 
 ```

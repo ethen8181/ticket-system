@@ -15,7 +15,7 @@ Sys.setlocale("LC_TIME", "English")
 
 
 # webflowdata
-webflowdata<- read.xlsx2( "webflowdata.xlsx", 2, colClass = c( rep( "numeric", 6 ) ), stringsAsFactors = FALSE )    
+webflowdata <- read.xlsx2( "webflowdata.xlsx", 2, colClass = c( "character", rep( "numeric", 5 ) ), stringsAsFactors = FALSE )    
 
 # ------ preprocessing the webflowdata
 # use letters to replace the original column names

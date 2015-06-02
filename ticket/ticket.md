@@ -301,5 +301,5 @@ ggplot( genderdata, aes( gender, price, fill = gender ) ) + geom_boxplot() +
 ```
 
 ![](ticket_files/figure-html/unnamed-chunk-10-1.png) 
-- **Note:** From the boxplot, there doesn't seem to be much of a difference between the two genders when it comes to the amount spent on purchasing the tickets. Thought boys would be more fond of this concert, because it is after all Girls Generation. 
+- **Note:** From the boxplot, there doesn't seem to be much of a difference between the two genders when it comes to the amount spent on purchasing the tickets. Thought boys would be more fond of this concert, because it is after all Girls Generation. Still, we shouldn't confirm this notion straight away, since we don't know if the person who bought the tickets were actually the ones who went to the concert.
 
