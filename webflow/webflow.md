@@ -124,7 +124,7 @@ ggplot( viewdata, aes( d, c ) ) + geom_point() + xlab( "UniquePageView" ) + ylab
 
 - **Note:** As you can see, it seems like the correlation between Pageview and UniquePageview is quite high(almost at 0.8 to be exact), but a simple scatterplot shows that there are outliers that are extremely obvious, and should receive more attention. 
 
-- After a brief summary below, you can clearly see that the mostly the Pageview value is about 1.8 times higher than the UniquePageview, meaning that on average, the users of this website usually browse about two pages on the sight and then leave. 
+- After a brief summary below, you can clearly see that the mostly the Pageview value is about 1.8 times higher than the UniquePageview, meaning that on average, the users of this website usually browse about two pages on the site and then leave. 
 
 ```r
 # A summary on the differences between the two variables
@@ -287,7 +287,7 @@ summary(insightdata$e)
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##   20.71   35.39   39.20   40.73   43.48  162.00
 ```
-- **Note:** The average time that users spent on this website is about 40 seconds. Beware that if Duration time may also infer that your customers are hesitant on their purchase, or content/UI tend to be confusing(if coupled with high Bounce Rate).
+- **Note:** The average time that users spent on this website is about 40 seconds. Beware that a high Duration time may also infer that your customers are hesitant on their purchase, or the content/UI of the site tend to be confusing(if coupled with high Bounce Rate or Exit Rate).
 
 
 
@@ -371,8 +371,9 @@ grid.arrange( plot3, plot4, ncol = 2 )
 
 ![](webflow_files/figure-html/unnamed-chunk-14-1.png) 
 
-- **Note1:** The plot may look quite similar to the plot we did with PageView earlier, which has above four major peaks. This is not surprising because first of all people are going through the process of buying tickets and when people are buying the tickets for concerts or shows that are more popular they often need to wait a little longer then usual for the systm to confirm their purchase.
-- **Note2:** Based on the average Bounce Rate for this site is approximately 26 percent , we can see that there are times where the bounce rate seems to get a little bit out of control. Therefore, we should probably look at when exactly did they occurred.
+- **Note1:** The plot may look quite similar to the plot we did with PageView earlier, which has four major peaks. This is not surprising because people on site are going through the process of buying tickets and when people are buying the tickets for concerts or shows that are more popular they often need to wait a little longer than usual for the systm to confirm their purchase.
+- **Note2:** The first peak of the Duration Time seems to be extremely high when compared with other peaks, like mentioned before, this may be indicating that there were some problems with the system(e.g. network crashed due to high concurrency).
+- **Note3:** Based on the average Bounce Rate for this site is approximately 26 percent , we can see that there are times where the bounce rate seems to get a little bit out of control. Therefore, we should probably look at when exactly did they occurred.
 
 
 ```r
