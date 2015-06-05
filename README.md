@@ -7,7 +7,7 @@ The repository consists of two folders `webflow` and `ticket`. Explanation of ho
 **webflow:**   
 - `webflowdata.xlsx` The main dataset used by this folder. It is a webflow record of a ticket system website.         
 - `webflow.md` Contains the whole process of the analysis and thorough detail of the dataset. 
-- `webflow.R` Just the R code for the analysis, though may not be as organized as well-explained.                  
+- `webflow.R` Just the R code for the analysis, though may not be as organized and well-explained.                  
 - `webflow_files` Contains the graph that the analysis generated.                
 
 **ticket:**          
