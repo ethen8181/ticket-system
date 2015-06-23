@@ -30,6 +30,7 @@ seatimage   <- readImage("seat.jpg")
 # the total number of seats available for each section
 totalseatspersection <- ticketdata4[, c( 2, 4 ) ] %>% group_by( Seat_Type ) %>% summarize( max(count) ) 
 
+# /* testing
 # mintime <- as.character( min(ticketdata4$my_date) )
 # maxtime <- as.character( max(ticketdata4$my_date) )
 # outputline <- paste( "Enter a timeline between ", mintime, " ~ ", maxtime," :", sep = "" )
@@ -42,6 +43,8 @@ totalseatspersection <- ticketdata4[, c( 2, 4 ) ] %>% group_by( Seat_Type ) %>% 
 # {
 #     timeline <- readline( prompt = outputline )    
 # } 
+# */
+
 ticketdata4$my_date <- strptime( ticketdata4$my_date, format = "%Y-%m-%d %H:%M:%S")
 image <- function( timeline )
 {  
@@ -53,7 +56,7 @@ image <- function( timeline )
     # get the closest timeline to the specified time
     closesttime <- ticketdata5[, c( 2, 5 ) ] %>% group_by( Seat_Type ) %>% summarize( min(diff) )
     
-    
+    # store the current ticket number
     tmp1 <- vector( mode = "list", length = nrow(closesttime) )
     
     for( i in 1:nrow(closesttime) )
@@ -68,7 +71,7 @@ image <- function( timeline )
     
     # deal with the Seat_Type that have not been included (The specified time is before that
     # ticket is being sold)
-    if( nrow(countdata)!=n_distinct(ticketdata4$Seat_Type) )
+    if( nrow(countdata) != n_distinct(ticketdata4$Seat_Type) )
     {
         tmp2 <- vector( mode = "list", length = n_distinct(ticketdata4$Seat_Type)-nrow(countdata) )
         

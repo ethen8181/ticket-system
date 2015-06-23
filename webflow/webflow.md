@@ -299,7 +299,7 @@ summary(insightdata$f)
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##   9.689  23.210  26.430  26.000  28.870  50.000
 ```
-- **Note:** On average, 26 percent of the users left this website without doing any further action.
+- **Note:** On average, 26 percent of the users left this website without taking any further action.
 
 - In the following section, we are going to look at the Duration Time and Bounce Rate data `insightdata` together by their timeline and when aggregated by hours. Basically it employs the same procedure used with pageviewdata above.
 - `insightdata1` Long format of the of `insightdata`.
