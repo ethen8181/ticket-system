@@ -2,7 +2,7 @@
 ## Exploratory Data Analysis with ticket system data
 
 ## Introduction
-The repository consists of two folders `webflow` and `ticket`. Explanation of how it works and what's inside the folder are provided below.
+The repository consists of three folders `webflow`, `ticket` and `system`. Explanation of how it works and what's inside the folder are provided below.
 
 **webflow:** A webflow record of a ticket system website.  
 - `webflowdata.xlsx` The main dataset used by this folder.          
