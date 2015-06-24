@@ -68,11 +68,11 @@ img {
 <h2>Dataset</h2>
 <p>Into the New World, was the 1st Asia conert tour by the South Korean girl’s band, SNSD (Girl Generation). The concert was held at the Taipei Arena in Taiwan on 2010/10/17. This dataset is from the ticket system that was in charge of selling the tickets to that concert. The raw data consists of 7069 rows and 30 variables. Each variables has a very descriptive header indicating what the variables mean, so we’ll only go through the ones that we will be using in this essay.</p>
 <ul>
-<li><code>IDENTITY</code>: The identity card ID for the person that made the purchase, the last three numbers have been deleted for the sake of customer privacy.</li>
-<li><code>CREATE_DATE</code>: The time when the person made the purchase.(This part should require some cleaning, as it would record 16:00 as 4 p.m., thus we should delete the p.m. and add 12 hours to the timeline that has p.m. in them).</li>
-<li><code>T_STANDARD_TICKET_TYPE_NAME</code>: Indicating whether that person is a member of the ticket system or not.</li>
-<li><code>SEAT_REGION_NAME</code>: Stating the seat section in the Arena for the purchased ticket.</li>
-<li><code>SEX</code> : Quite straightforward, the person’s gender.</li>
+<li><code>IDENTITY</code> The identity card ID for the person that made the purchase, the last three numbers have been deleted for the sake of customer privacy.</li>
+<li><code>CREATE_DATE</code> The time when the person made the purchase.(This part should require some cleaning, as it would record 16:00 as 4 p.m., thus we should delete the p.m. and add 12 hours to the timeline that has p.m. in them).</li>
+<li><code>T_STANDARD_TICKET_TYPE_NAME</code> Indicating whether that person is a member of the ticket system or not.</li>
+<li><code>SEAT_REGION_NAME</code> Stating the seat section in the Arena for the purchased ticket.</li>
+<li><code>SEX</code> Quite straightforward, the person’s gender.</li>
 </ul>
 </div>
 <div id="sypnosis" class="section level2">
@@ -81,17 +81,18 @@ img {
 </div>
 <div id="environment-setting" class="section level2">
 <h2>Environment Setting</h2>
-<pre class="r"><code>library(plyr)
+<pre class="r"><code># load library
+library(plyr)
 library(tidyr)
 library(ggplot2)
 library(data.table)
 library(RColorBrewer)
 suppressMessages( library(dplyr) )
-
+# set working environment
 setwd(&quot;C:/Users/ASUS/ticket-system/ticket&quot;)
-Sys.setlocale(&quot;LC_TIME&quot;, &quot;English&quot;)</code></pre>
-<pre><code>## [1] &quot;English_United States.1252&quot;</code></pre>
-<pre class="r"><code>ticketdata1 &lt;- read.csv( &quot;ticketdata.csv&quot;, stringsAsFactors = FALSE )</code></pre>
+Sys.setlocale(&quot;LC_TIME&quot;, &quot;English&quot;)
+# read in the data
+ticketdata1 &lt;- read.csv( &quot;ticketdata.csv&quot;, stringsAsFactors = FALSE )</code></pre>
 </div>
 <div id="data-preprocessing" class="section level2">
 <h2>Data Preprocessing</h2>

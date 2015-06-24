@@ -4,11 +4,11 @@
 Into the New World, was the 1st Asia conert tour by the South Korean girl's band, SNSD (Girl Generation). The concert was held at the Taipei Arena in Taiwan on 2010/10/17. This dataset is from the ticket system that was in charge of selling the tickets to that concert. The raw data consists of 7069 rows and 30 variables. 
 Each variables has a very descriptive header indicating what the variables mean, so we'll only go through the ones that we will be using in this essay.
 
-- `IDENTITY`: The identity card ID for the person that made the purchase, the last three numbers have been deleted for the sake of customer privacy.
-- `CREATE_DATE`: The time when the person made the purchase.(This part should require some cleaning, as it would record 16:00 as 4 p.m., thus we should delete the p.m. and add 12 hours to the timeline that has p.m. in them).
-- `T_STANDARD_TICKET_TYPE_NAME`: Indicating whether that person is a member of the ticket system or not.
-- `SEAT_REGION_NAME`: Stating the seat section in the Arena for the purchased ticket.
-- `SEX` : Quite straightforward, the person's gender.
+- `IDENTITY` The identity card ID for the person that made the purchase, the last three numbers have been deleted for the sake of customer privacy.
+- `CREATE_DATE` The time when the person made the purchase.(This part should require some cleaning, as it would record 16:00 as 4 p.m., thus we should delete the p.m. and add 12 hours to the timeline that has p.m. in them).
+- `T_STANDARD_TICKET_TYPE_NAME` Indicating whether that person is a member of the ticket system or not.
+- `SEAT_REGION_NAME` Stating the seat section in the Arena for the purchased ticket.
+- `SEX` Quite straightforward, the person's gender.
 
 ## Sypnosis
 For this essay, we would like to answer two main question.    
@@ -18,22 +18,17 @@ For this essay, we would like to answer two main question.
 ## Environment Setting
 
 ```r
+# load library
 library(plyr)
 library(tidyr)
 library(ggplot2)
 library(data.table)
 library(RColorBrewer)
 suppressMessages( library(dplyr) )
-
+# set working environment
 setwd("C:/Users/ASUS/ticket-system/ticket")
 Sys.setlocale("LC_TIME", "English")
-```
-
-```
-## [1] "English_United States.1252"
-```
-
-```r
+# read in the data
 ticketdata1 <- read.csv( "ticketdata.csv", stringsAsFactors = FALSE )
 ```
 ## Data Preprocessing
