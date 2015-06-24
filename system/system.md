@@ -1,6 +1,16 @@
 # Ticket System Data Analysis
 
-## I. Environment Setting 
+## I. Data Description
+This dataset used for this report is the ticket selling record for a ticket system for January to April. It consists of 221722 observations and 13 variables. The column names are already quite descriptive of what each variables stands for so detailed-explanation will not be included. However, there are a couple of things that may need some explaining.
+
+- `TicketCode` With you want to aggregate the data of the same concert you should do it by using this column. Do not use the `TicketName` column, they might be different for the same concert due to marketing reasons ( making the name look cuter promotes sales...? ). 
+- `TicketSiteCode` The Code 88888 tells us that the ticket was sold by online platform, while all the other code represents different physical channel ( e.g. convenience stores, bookstores etc. ).
+- For `Gender` and `BirthYear` column, unless the column `TicketSiteCode` is 88888 for that corresponding row, then the values for these two columns will have no meaning. THe values that appears for the data cell is just the default value. Therefore, if you want to conduct analysis based on the sex and age of the consumers, you should only include the observations where its `TicketSiteCode` is 88888.
+- To preprocess the correct time for which the ticket was bought requires combining the Year, Month, Date part from the `SoldDate` column and Hour, Minute, Second from the `SoldTime` column. The original database somehow messed up the two column and splitted to two parts.  
+- `SoldPrice` The actual sold price of the ticket might be different to the original price due to reasons such as the member being a VIP member of the ticket system or the ticket site was giving out discounts if the tickets were purchase at those specific sites. Another reason is that the tickets were given for out for free ( will be recorded as 0 or 10 for the tax in the data cell ).
+- `URL` Adding http://www.ticket.com.tw/ before the url should lead you to the correct website.
+
+## II. Environment Setting 
 
 ```r
 # load library
@@ -18,7 +28,7 @@ data  <- fread( files, stringsAsFactors = FALSE, header = TRUE, sep = ",",
                 colClasses = "character" )
 ```
 
-## II. Exploratory Data Analysis
+## III. Exploratory Data Analysis
 
 The section exploratory data analysis addresses four main questions. 
 
@@ -29,12 +39,14 @@ The section exploratory data analysis addresses four main questions.
 
 #### 1. Total Ticket Revenue
 
-Business always cares about money, do not blaim them that is what business do, they make money. Slight digression there, anyway, let us trace back how much revenue did each TicketCode generated.
+
+Business always cares about money, don't blaim them, that is what business do, they make money. Slight digression there, anyway, let us trace back how much revenue did each TicketCode ( each concert ) generated.
 
 - `price` Calculate the total amount of the original ticket price and the price that were sold grouped by each TicketCode. Extract the top 50 ordered by total sold price, also add an additional column that states the difference between the total original and sold price.
 
 
 ```r
+# extract price data 
 price <- data[ , .( original = sum( as.numeric(OriginalPrice) ), 
                  sold = sum( as.numeric(SoldPrice) ), count = .N ), by = TicketCode ] %>%
          arrange( desc(sold), desc(original), desc(count) ) %>% 
@@ -45,12 +57,12 @@ head(price)
 
 ```
 ##    TicketCode original     sold count    diff
-## 1:      10605 34026400 33998920 11921   27480
-## 2:      10440 32098590 27022635  8779 5075955
-## 3:      10413 16469980 16207980  4190  262000
-## 4:      10439 15163400 15122910  7504   40490
-## 5:      10430 11296430 10970440  4417  325990
-## 6:      10619 10456200 10424210  3747   31990
+## 1: 0000010605 34026400 33998920 11921   27480
+## 2: 0000010440 32098590 27022635  8779 5075955
+## 3: 0000010413 16469980 16207980  4190  262000
+## 4: 0000010439 15163400 15122910  7504   40490
+## 5: 0000010430 11296430 10970440  4417  325990
+## 6: 0000010619 10456200 10424210  3747   31990
 ```
 
 ```r
@@ -64,21 +76,16 @@ ggplot( price, aes( original, sold, size = count, color = diff ) ) +
 
 ![](system_files/figure-html/unnamed-chunk-2-1.png) 
 
-The analysis of the following section will only be based on part of the dataset for simplicity.
+- **Note:** The labels indicating which TicketCode each point represents is dropped to avoid overfitting the graph. A clear picture is still seen above that some concerts are just more favored by the current consumers at that time.
 
-- `highdata` For deeper insight, we will extract the TicketCode in which their total sold revenue are larger than 10^7.
+> The analysis of the following section will only be based on part of the dataset for simplicity. 
+
+- `highdata` For deeper insight, we will extract the TicketCode in which their total sold revenue are larger than 10^7 and that were sold by the TicketSiteCode 88888 (internet). We will use this subset of the data for part 2 and 3 of the following exploratory analysis.
 
 ```r
 # top-saling TicketCode
-high <- price$TicketCode[ (price$sold > 10^7) ] ; high
-```
-
-```
-## [1] "10605" "10440" "10413" "10439" "10430" "10619" "10329"
-```
-
-```r
-highdata <- data[ TicketCode %in% high, ]
+high <- price$TicketCode[ (price$sold > 10^7) ]
+highdata <- data[ TicketCode %in% high, ] %>% filter( TicketSiteCode == 88888 )
 ```
 
 #### 2. Mean of SoldPrice by Gender
@@ -120,10 +127,12 @@ sapply( high, function(x)
 ```
 
 ```
-## 10605 10440 10413 10439 10430 10619 10329 
-##  TRUE FALSE FALSE  TRUE  TRUE  TRUE  TRUE
+## 0000010605 0000010440 0000010413 0000010439 0000010430 0000010619 
+##       TRUE      FALSE      FALSE      FALSE       TRUE       TRUE 
+## 0000010329 
+##       TRUE
 ```
-- **Note:** Based on the results of the t-test, it seems that for the 7 TicketCode that attributed to more than 10^7 ticket revenues, only two of them are impartial for the average amount of money spent on purchasing tickets between male and female. If you look back at the plot, it looks like boys tend to spend more on buying. But that was the average per person, what about the total amount ?
+- **Note:** Based on the results of the t-test, it seems that for the 7 TicketCode that attributed to more than 10^7 ticket revenues, about half of them are impartial for the average amount of money spent on purchasing tickets between male and female. But that was the average per person, what about the total amount ?
 
 
 ```r
@@ -134,7 +143,7 @@ table(highdata$Gender)
 ```
 ## 
 ##     F     M 
-## 35393  9772
+## 17982  9772
 ```
 
 ```r
@@ -145,22 +154,22 @@ aggregate( as.numeric(SoldPrice) ~ TicketCode + Gender, data = highdata, FUN = s
 
 ```
 ##    TicketCode Gender as.numeric(SoldPrice)
-## 1       10329      F               7852980
-## 2       10329      M               2479800
-## 3       10413      F              12311580
-## 4       10413      M               3896400
-## 5       10430      F               8415040
-## 6       10430      M               2555400
-## 7       10439      F              12532710
-## 8       10439      M               2590200
-## 9       10440      F              20532645
-## 10      10440      M               6489990
-## 11      10605      F              26441920
-## 12      10605      M               7557000
-## 13      10619      F               7981510
-## 14      10619      M               2442700
+## 1  0000010329      F               3672000
+## 2  0000010329      M               2479800
+## 3  0000010413      F               6481200
+## 4  0000010413      M               3896400
+## 5  0000010430      F               5642000
+## 6  0000010430      M               2555400
+## 7  0000010439      F               6997000
+## 8  0000010439      M               2590200
+## 9  0000010440      F               9325285
+## 10 0000010440      M               6489990
+## 11 0000010605      F              11686100
+## 12 0000010605      M               7557000
+## 13 0000010619      F               5903200
+## 14 0000010619      M               2442700
 ```
-- **Note:** Wow! Despite the previous analysis told us that on average, males spent slightly more than females, the consumers/users for this ticket system are largely dominated by females. That is, tickets that were purchased by female are three times higher than that of male ( Inference from the table above ) and they account for a large portion of the total ticket revenue ( Looking at the aggregated data above, the statement is true for the all 7 top-saling tickets ). 
+- **Note:** Wow! Despite the previous analysis told us that on average, there wasn't a clear bias toward which genders spends more on buying tickets, the consumers/users for this ticket system seems to be slightly dominated by females. That is, tickets that were purchased by female were almost two times higher than that of male ( Inference from the table above ) and they account for more of the total ticket revenue ( Looking at the aggregated data above, the statement is true for the all 7 top-saling tickets ). 
 
 #### 3. Age Distribution
 
@@ -199,7 +208,7 @@ table(highdata$cut)
 ```
 ## 
 ##  [5,10] (10,20] (20,30] (30,40] (40,50] (50,60] (60,81] 
-##     359     543    3178   32978    5647    1936     524
+##     359     543    3178   15567    5647    1936     524
 ```
 
 ```r
@@ -216,8 +225,9 @@ ggplot( sum1, aes( Gender, cut, color = Gender, size = sum ) ) +
 
 ![](system_files/figure-html/unnamed-chunk-9-1.png) 
 
-- **Note1:** The table of the cut, and the plot confirms the fact the people of age 30 ~ 40 does in fact buy more tickets and lead to more revenues than other age levels, for clearity, the bigger the point in the plot, the higher the total amount of money was spent for that age level, matching our previous assumption.
-- **Note2:** The biggest difference for the amount of money spent between male and female is seen for TicketCode 10605. After looking it up in the TicketName column, it was the concert of [Jay  Chou](https://en.wikipedia.org/?title=Jay_Chou). Another minor point, it is quite surprising that there were records of people that falls under the age category 5 ~ 10. 
+- **Note1:** The table of the cut, and the plot confirms the fact the people of age 30 ~ 40 does in fact buy more tickets and lead to more revenues than other age levels, for clarity, the bigger the point in the plot, the higher the total amount of money was spent for that age level, matching our previous assumption.
+- **Note2:** The biggest difference for the amount of money spent between male and female is seen for TicketCode 10605. After looking it up in the TicketName column, it was the concert of [Jay  Chou](https://en.wikipedia.org/?title=Jay_Chou). 
+- **Note3:** Another minor point, it is quite surprising that there were records of people that falls under the age category 5 ~ 10. This probably indicates the proportion of members of the ticket system that provided false age when registering. 
 
 
 **Section Conclusion:**
@@ -226,12 +236,14 @@ Although we do not know that whether the person that bought the ticket is actual
 
 #### 4. Analyze TicketSiteCode
 
-In the last part of the analysis, we wish to observe the total revenue generated by each TicketSite ? Also how many TicketSite leads to the majority of the revenue.
+In the last part of the exploratory analysis, we wish to observe the total revenue generated by each TicketSite ? Also how many TicketSite leads to the majority of the revenue.
 
+- `topdata` Top-saling concert data ( total sales larger than 10^7 )
 - `site` Total revenue generated by each ticketsite.
 
 ```r
-site <- highdata[ , .( sum = sum( as.numeric(SoldPrice) ) ), by = TicketSiteCode ] %>% 
+topdata <- data[ TicketCode %in% high, ]
+site <- topdata[ , .( sum = sum( as.numeric(SoldPrice) ) ), by = TicketSiteCode ] %>% 
             arrange( desc(sum) )
 site
 ```
@@ -239,16 +251,16 @@ site
 ```
 ##      TicketSiteCode      sum
 ##   1:          88888 77718275
-##   2:            715  7217800
-##   3:            589  2631600
-##   4:            248  2077280
-##   5:            206  1901935
+##   2:          00715  7217800
+##   3:          00589  2631600
+##   4:          00248  2077280
+##   5:          00206  1901935
 ##  ---                        
-## 350:            654     1800
-## 351:            682     1200
-## 352:           5405     1200
-## 353:            563     1200
-## 354:             39      800
+## 350:          00654     1800
+## 351:          00682     1200
+## 352:          05405     1200
+## 353:          00563     1200
+## 354:          00039      800
 ```
 
 ```r
@@ -263,7 +275,11 @@ sapply( c( .7, .8 ), function(x)
 ## [1] 0.5649718 4.5197740
 ```
 
-- **Note1:** TicketSiteCode 88888 accounts for 62.64 percent of the ticket system's total revenue. As for the TicketSite that had extremely inferior amount of revenues, maybe it is time to shut them down.
+- **Note1:** TicketSiteCode 88888 accounts for 62.64 percent of the ticket system's total revenue, well it is after all an online ticket system. As for the TicketSite that had extremely inferior amount of revenues, maybe it is time to shut them down.
 - **Note2:** The long tail theory where a small proportion of the products generates large proportion of the revenues also holds for this ticket system. Where 0.5 percent of the ticketsite contributes to 70 percent of the sales and 4.5 percent contributes to 80.
+
+#### IV. Time Series Analysis
+
+
 
 

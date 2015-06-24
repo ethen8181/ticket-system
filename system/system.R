@@ -8,7 +8,7 @@ setwd("C:/Users/ASUS/ticket-system/system")
 
 files <- list.files( "data", full.names = TRUE )
 data  <- fread( files, stringsAsFactors = FALSE, header = TRUE, sep = ",", colClasses = "character" )
-
+View(data)
 # ---------------------------------------------------------------------------------
 # total price for every kind ticket, top 50, add new column counting the difference
 # of the original total price and the sold total price
@@ -29,7 +29,7 @@ ggplot( price, aes( original, sold, size = count, color = diff ) ) +
 
 # extract the data ticketcode which their sold are larger than 10^7
 high <- price$TicketCode[ (price$sold > 10^7) ]
-highdata <- data[ TicketCode %in% high, ]
+highdata <- data[ TicketCode %in% high, ] %>% filter( TicketSiteCode == 88888 )
 
 # ---------------------------------------------------------------------------------
 # analyze mean of sold price by gender
@@ -86,8 +86,8 @@ ggplot( sum1, aes( Gender, cut, color = Gender, size = sum ) ) +
 
 # ------------------------------------------------------------------
 # analyze TicketSiteCode
-
-site <- highdata[ , .( sum = sum( as.numeric(SoldPrice) ) ), by = TicketSiteCode ] %>% arrange( desc(sum) )
+topdata <- data[ TicketCode %in% high, ]
+site <- topdata[ , .( sum = sum( as.numeric(SoldPrice) ) ), by = TicketSiteCode ] %>% arrange( desc(sum) )
 site
 sapply( c( .7, .8 ), function(x)
 {
