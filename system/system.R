@@ -96,8 +96,6 @@ sapply( c( .7, .8 ), function(x)
 # ------------------------------------------------------------------
 # time series
 
-View(topdata)
-
 # paste the two column together and exclude unneccesary time
 string <- gsub( "(.*)\\s.*\\s(.*)\\.[0]{3}", "\\1 \\2", 
                 with( topdata, paste( SoldDate, SoldTime, sep = "" ) ) ) 
@@ -108,8 +106,7 @@ topdata$SoldTime <- NULL
 # order the data by time
 topdata <- topdata[ order(topdata$SoldDate), ] %>% 
                filter( !topdata$SoldPrice %in% c( 0, 10 ) )
-dim(topdata)
-
+# fill in the count
 process <- lapply( unique(topdata$TicketCode), function(x)
 {
     # extract each unique data
@@ -117,22 +114,16 @@ process <- lapply( unique(topdata$TicketCode), function(x)
     # exclude the free given ticket
     subdata <- topdata[ boolean, ] 
     # normalize the data (x-min)/(max-min)
-    subdata$count <- ( nrow(subdata):1-1 ) / nrow(subdata)
+    subdata$count <- ( nrow(subdata):1-1 ) / (nrow(subdata)-1)
     return(subdata)
 })    
-
 pdata <- do.call( rbind, process )
-View(pdata)
 
+ggplot( pdata, aes( SoldDate, count, color = TicketCode ) ) + geom_line( size = 1 )
 
-ggplot( pdata, aes( SoldDate, count, color = TicketCode ) ) + geom_line()
-
-
-
-
-
+# cumulative sales
+pdata$cumsum <- ave( pdata$SoldPrice , pdata$TicketCode, FUN = cumsum )
+ggplot( pdata, aes( SoldDate, as.numeric(cumsum), color = TicketCode ) ) + geom_line()
 
 
 
-
-pt( -1.16, df = 11 )

@@ -308,7 +308,7 @@ process <- lapply( unique(topdata$TicketCode), function(x)
     # exclude the free given ticket
     subdata <- topdata[ boolean, ] 
     # normalization : (x-min)/(max-min)
-    subdata$count <- ( nrow(subdata):1-1 ) / nrow(subdata)
+    subdata$count <- ( nrow(subdata):1-1 ) / ( nrow(subdata)-1 )
     return(subdata)
 })    
 pdata <- do.call( rbind, process )
