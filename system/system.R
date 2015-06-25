@@ -8,7 +8,7 @@ setwd("C:/Users/ASUS/ticket-system/system")
 
 files <- list.files( "data", full.names = TRUE )
 data  <- fread( files, stringsAsFactors = FALSE, header = TRUE, sep = ",", colClasses = "character" )
-View(data)
+
 # ---------------------------------------------------------------------------------
 # total price for every kind ticket, top 50, add new column counting the difference
 # of the original total price and the sold total price
@@ -83,7 +83,6 @@ ggplot( sum1, aes( Gender, cut, color = Gender, size = sum ) ) +
     geom_point( alpha = .8 ) + facet_grid( ~ TicketCode ) + 
     scale_size_continuous( range = c( 5, 20 ) ) 
 
-
 # ------------------------------------------------------------------
 # analyze TicketSiteCode
 topdata <- data[ TicketCode %in% high, ]
@@ -94,5 +93,46 @@ sapply( c( .7, .8 ), function(x)
     mean( !cumsum( site$sum / sum(site$sum) ) > x ) * 100   
 })
 
+# ------------------------------------------------------------------
+# time series
+
+View(topdata)
+
+# paste the two column together and exclude unneccesary time
+string <- gsub( "(.*)\\s.*\\s(.*)\\.[0]{3}", "\\1 \\2", 
+                with( topdata, paste( SoldDate, SoldTime, sep = "" ) ) ) 
+# convert character to time
+topdata$SoldDate <- ymd_hms(string)
+# exclude SoldTime column
+topdata$SoldTime <- NULL
+# order the data by time
+topdata <- topdata[ order(topdata$SoldDate), ] %>% 
+               filter( !topdata$SoldPrice %in% c( 0, 10 ) )
+dim(topdata)
+
+process <- lapply( unique(topdata$TicketCode), function(x)
+{
+    # extract each unique data
+    boolean <- topdata$TicketCode == x
+    # exclude the free given ticket
+    subdata <- topdata[ boolean, ] 
+    # normalize the data (x-min)/(max-min)
+    subdata$count <- ( nrow(subdata):1-1 ) / nrow(subdata)
+    return(subdata)
+})    
+
+pdata <- do.call( rbind, process )
+View(pdata)
 
 
+ggplot( pdata, aes( SoldDate, count, color = TicketCode ) ) + geom_line()
+
+
+
+
+
+
+
+
+
+pt( -1.16, df = 11 )
