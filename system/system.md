@@ -186,7 +186,8 @@ highdata[ , age := year(today()) - as.numeric(BirthYear) ]
 # extract one of the ticket concert and look at its age distribution 
 agedata <- highdata[ TicketCode == high[1], ] %>% select( SoldPrice, Gender, age )
 # age distribution histogram by gender
-ggplot( agedata, aes( age, fill = Gender ) ) + geom_histogram() + facet_grid( ~ Gender )
+ggplot( agedata, aes( age, fill = Gender ) ) + geom_histogram() + facet_grid( ~ Gender ) + 
+    ggtitle("Number of Tickets Purchased For Different Age Levels and Genders")
 ```
 
 ![](system_files/figure-html/unnamed-chunk-8-1.png) 
@@ -220,7 +221,7 @@ ggplot( sum1, aes( Gender, cut, color = Gender, size = sum ) ) +
     geom_point( alpha = .8 ) + facet_grid( ~ TicketCode ) + 
     scale_size_continuous( range = c( 5, 20 ) ) + 
     labs( y = "Age Levels", 
-          title = "Total Amount Spent for each Age Level between Genders" )
+          title = "Total Amount Spent on Tickets for each Age Level between Genders" )
 ```
 
 ![](system_files/figure-html/unnamed-chunk-9-1.png) 
@@ -312,7 +313,8 @@ process <- lapply( unique(topdata$TicketCode), function(x)
 })    
 pdata <- do.call( rbind, process )
 # plot
-ggplot( pdata, aes( SoldDate, count, color = TicketCode ) ) + geom_line()
+ggplot( pdata, aes( SoldDate, count, color = TicketCode ) ) + geom_line() + 
+    labs( title = "Tickets Sold-Out Rate", y = "Tickets Percentage Left", x = "Date" )
 ```
 
 ![](system_files/figure-html/unnamed-chunk-11-1.png) 
