@@ -2,6 +2,7 @@
 library(RColorBrewer)
 library(reshape2)
 library(ggplot2)
+library(dplyr)
 
 mosaic_plot <- function( df )
 {

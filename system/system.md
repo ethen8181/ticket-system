@@ -1,5 +1,15 @@
 # Ticket System Data Analysis
 
+**2015.7.12 Ethen Liu**
+
+## Excecute Summary
+After performing some exploratory analysis based on the dataset of a ticket selling system, we were able to discover four primary facts.    
+
+1. The major audience of top-saling ticketsthis for this ticket systems seems to be female customers whose age is about 30 ~ 40.
+2. Geographically, personal taste on concerts varies in different parts of Taiwan, with the northern region generating most of the sells.
+3. Of all the channels that sells tickets, online channel contributed to about 60 percent of the system's total revenue.
+4. Discovered three different patterns when looking at the sold out rate for the 7 top-saling concert. 
+
 ## I. Data Description
 This dataset used for this report is the ticket selling record for a ticket system for January to April. It consists of 221722 observations and 13 variables. The column names are already quite descriptive of what each variables stands for so detailed-explanation will not be included. However, there are a couple of things that may need some explaining.
 
