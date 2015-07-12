@@ -1,5 +1,6 @@
 library(data.table)
 library(lubridate)
+library(tidyr)
 library(dplyr)
 library(ggplot2)
 
@@ -12,6 +13,7 @@ data  <- fread( files, stringsAsFactors = FALSE, header = TRUE, sep = ",", colCl
 # ---------------------------------------------------------------------------------
 # total price for every kind ticket, top 50, add new column counting the difference
 # of the original total price and the sold total price
+
 price <- data[ , .( original = sum( as.numeric(OriginalPrice) ), 
                     sold = sum( as.numeric(SoldPrice) ), count = .N ), by = TicketCode ] %>%
          arrange( desc(sold), desc(original), desc(count) ) %>% 
@@ -33,6 +35,7 @@ highdata <- data[ TicketCode %in% high, ] %>% filter( TicketSiteCode == 88888 )
 
 # ---------------------------------------------------------------------------------
 # analyze mean of sold price by gender
+
 mean1 <- aggregate( as.numeric(SoldPrice) ~ TicketCode + Gender, data = highdata, FUN = mean ) %>%
          arrange( TicketCode )
 # rename the third column, it was too lengthy
@@ -59,6 +62,7 @@ sapply( high, function(x)
 
 #------------------------------------------------------------------------------------
 # analyze the age distribution
+
 highdata[ , age := year(today()) - as.numeric(BirthYear) ]
 # female dominate
 table(highdata$Gender)
@@ -84,7 +88,64 @@ ggplot( sum1, aes( Gender, cut, color = Gender, size = sum ) ) +
     scale_size_continuous( range = c( 5, 20 ) ) 
 
 # ------------------------------------------------------------------
+# ZipCode
+
+head(highdata$ZipCode)
+# convery the zipcity to numeric to elevaluate only the ones from 0-9
+highdata$zipcity <- substring( highdata$ZipCode, 1, 1 ) %>% as.numeric()
+
+# store the rows that were coerced to NAs, exclude them from highdata
+narow <- which( is.na(highdata$zipcity) )
+zipcodedata <- highdata[ -narow, ]
+# this is the same as the two lines of code above
+zipcodedata <- highdata[ complete.cases(highdata), ]
+View(zipcodedata)
+
+# contingency table : gender and zipcity
+gender_zip <- with( zipcodedata, table( Gender, zipcity ) )
+addmargins(gender_zip)
+chisq.test(gender_zip)$expected
+
+# contingency table : TicketCode and zipcity
+ticket_zip <- with( highdata, table( TicketCode, zipcity ) )
+# convert the contingency table to data frame
+ticket_zip_df <- data.frame(ticket_zip) %>% spread( zipcity, Freq )
+# does the same thing as the code as above 
+library(reshape2)
+dcast( data.frame(ticket_zip), TicketCode ~ zipcity, value.var = "Freq" )
+xtabs( Freq ~ TicketCode + zipcity, data = data.frame(ticket_zip) )
+
+geographic <- list( c( "1","2" ), c( "3","4","5" ), c( "6","7","8" ), c( "9","0" ) )
+# combine it by geographic
+combine <- lapply( geographic, function(x)
+{
+    subset( ticket_zip_df, select = x ) %>%
+        apply( 1, sum )
+})
+combined_ticket_zip <- cbind( ticket_zip_df$TicketCode, 
+                              data.frame( do.call( cbind, combine ) ) )
+names(combined_ticket_zip) <- c( "TicketCode", "North", "Mid", "South", "East" )
+
+# get the actual "numbers", proportion for each region
+# convert data frame into long format to get the table
+longformat <- gather( combined_ticket_zip, "Region", "Freq", -1 )
+longtable  <- xtabs( Freq ~ TicketCode + Region, data = longformat )
+addmargins(longtable)
+# use prop.table
+prop.table( longtable, 1 )
+
+ggplot( longformat, aes( TicketCode, Freq, fill = Region ) ) + 
+    geom_bar( stat = "identity", position = "fill" ) 
+# mosaic plot
+source("mosaic_plot.R")
+mosaic_plot(combined_ticket_zip)
+# age and gender table for one of the ticket concert
+tabledata <- zipcodedata %>% filter( TicketCode == "0000010440" ) %>% select( Gender, cut )
+table(tabledata)
+
+# ------------------------------------------------------------------
 # analyze TicketSiteCode
+
 topdata <- data[ TicketCode %in% high, ]
 site <- topdata[ , .( sum = sum( as.numeric(SoldPrice) ) ), by = TicketSiteCode ] %>% arrange( desc(sum) )
 site
@@ -103,9 +164,10 @@ string <- gsub( "(.*)\\s.*\\s(.*)\\.[0]{3}", "\\1 \\2",
 topdata$SoldDate <- ymd_hms(string)
 # exclude SoldTime column
 topdata$SoldTime <- NULL
-# order the data by time
+# order the data by time, exclude the tickets that were given away for free
 topdata <- topdata[ order(topdata$SoldDate), ] %>% 
                filter( !topdata$SoldPrice %in% c( 0, 10 ) )
+
 # fill in the count
 process <- lapply( unique(topdata$TicketCode), function(x)
 {
@@ -113,14 +175,16 @@ process <- lapply( unique(topdata$TicketCode), function(x)
     boolean <- topdata$TicketCode == x
     # exclude the free given ticket
     subdata <- topdata[ boolean, ] 
-    # normalize the data (x-min)/(max-min)
-    subdata$count <- ( nrow(subdata):1-1 ) / (nrow(subdata)-1)
+    # normalize the data (x-min)/(max-min), times 100 to express it in percentage
+    subdata$count <- ( nrow(subdata):1-1 ) / (nrow(subdata)-1) * 100
     return(subdata)
 })    
 pdata <- do.call( rbind, process )
-
+# use the pdata ( plot data ) to plot the ticket sold out rate
 ggplot( pdata, aes( SoldDate, count, color = TicketCode ) ) + geom_line( size = 1 )
 
+
+# ---------------------------------------------------------
 # cumulative sales
 pdata$cumsum <- ave( pdata$SoldPrice , pdata$TicketCode, FUN = cumsum )
 ggplot( pdata, aes( SoldDate, as.numeric(cumsum), color = TicketCode ) ) + geom_line()
