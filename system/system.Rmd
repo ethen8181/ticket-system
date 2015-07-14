@@ -51,11 +51,11 @@ data  <- fread( files, stringsAsFactors = FALSE, header = TRUE, sep = ",",
 
 The section exploratory data analysis addresses four main questions. 
 
-1. [Total Ticket Revenue](#### 1. Total Ticket Revenue)
-2. [Mean of SoldPrice by Gender](#### 2. Mean of SoldPrice by Gender)
-3. [Age Distribution](#### 3. Age Distribution)
-4. [Analysis on the ZipCode column](#### 4. Analysis on the ZipCode column)
-5. [Analyze TicketSiteCode](#### 5. Analyze TicketSiteCode)
+1. Total Ticket Revenue
+2. Mean of SoldPrice by Gender
+3. Age Distribution
+4. Analysis on the ZipCode column
+5. Analyze TicketSiteCode
 
 #### 1. Total Ticket Revenue
 
