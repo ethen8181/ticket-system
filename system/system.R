@@ -191,3 +191,6 @@ ggplot( pdata, aes( SoldDate, as.numeric(cumsum), color = TicketCode ) ) + geom_
 
 
 
+
+
+
