@@ -189,6 +189,67 @@ ggplot( pdata, aes( SoldDate, count, color = TicketCode ) ) + geom_line( size = 
 pdata$cumsum <- ave( pdata$SoldPrice , pdata$TicketCode, FUN = cumsum )
 ggplot( pdata, aes( SoldDate, as.numeric(cumsum), color = TicketCode ) ) + geom_line()
 
+# ---------------------------------------------------------
+# dynamic time warp & hierarchical clustering
+library(dtw)
+library(proxy)
+unique(pdata$TicketCode)
+head(pdata)
+
+# extract the ticket sold out rate : count for each TicketCode
+ratecount <- lapply( unique(pdata$TicketCode), function(x)
+{
+    pdata %>% filter( TicketCode == x ) %>% select( count )        
+})
+
+# retrieve the maximum rows from the count, use to fill in NA value for other shorter time series
+maxrow <- max( sapply( 1:length(ratecount), function(x)
+{
+    nrow(ratecount[[x]])       
+}) )
+
+# fill in the NA values for the shorter time series
+modifyrate <- lapply( 1:length(ratecount), function(x)
+{
+    # different of rows
+    diffs <- maxrow - nrow( ratecount[[x]] )
+    # fill in NA values
+    num_NA <- rep( NA, diffs )
+    # convert the num_NA to a data.table and rbind them
+    filled <- rbind( ratecount[[x]], data.table( count = num_NA ) ) 
+    # return the transpose of the data
+    return( t(filled) )
+})
+timeseries <- do.call( rbind, modifyrate )
+# fill in the names for the matrix
+row.names(timeseries) <- unique(pdata$TicketCode)
+
+# different length calculation
+# http://stats.stackexchange.com/questions/58725/time-series-similarity-differing-lengths-with-r
+# customize the distance function
+DWT.DIST <- function( x, y )
+{
+    # omit the NA values for the time series
+    a <- na.omit(x)
+    b <- na.omit(y)
+    return( dtw( a, b, step.pattern = symmetric1 )$distance )
+}
+# create a new entry in the registry
+pr_DB$set_entry( FUN = DWT.DIST, names = c("DWT.DIST") )
+# hierarchical clustering
+d <- dist( timeseries, method = "DWT.DIST")
+hc <- hclust( d, method = "complete" )
+plot(hc)
+cutree( hc, k = 3 )
+
+pr_DB$delete_entry( "DWT.DIST" )
+# -----------------------------------------------------------------------------
+
+# get "12" from string "aaaa12xxxx"
+gsub( ".*([0-9]{2}).*", "\\1", "aaaa12xxxx" )
+library(stringr)
+str_locate("aaa12xxx", "[0-9]+")
+str_extract("aaa12xxx", "[0-9]+")
 
 
 

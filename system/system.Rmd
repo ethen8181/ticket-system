@@ -81,7 +81,9 @@ ggplot( price, aes( original, sold, size = count, color = diff ) ) +
 
 ```
 
-- **Note:** The labels indicating which TicketCode each point represents is dropped to avoid overfitting the graph. A clear picture is still seen above that some concerts are just more favored by the current consumers at that time.
+- **Note1:** The labels indicating which TicketCode each point represents is dropped to avoid overfitting the graph. A clear picture is still seen above that some concerts are just more favored by consumers at that time, selling more tickets ( size of the circle ) and generating more ticket revenue.
+
+- **Note2:** Another discovery from the plot that's worth pointing out is the color of one of the concerts is significantly darker than others, this implies that the total amount of the OriginalPrice largely varies with the final SoldPrice. Indicating there might be some issues regarding the original pricing of this concert. 
 
 > The analysis of the following section will only be based on part of the dataset for simplicity. 
 
