@@ -69,9 +69,9 @@ img {
 <h2>Excecute Summary</h2>
 <p>After performing some exploratory analysis based on the dataset of a ticket selling system, we were able to discover four primary facts.</p>
 <ol style="list-style-type: decimal">
-<li>The major audience of top-saling ticketsthis for this ticket systems seems to be female customers whose age is about 30 ~ 40.</li>
+<li>The major audience segment of the top-saling tickets(concerts) for this ticket system seems to be female customers whose age is about 30 ~ 40.</li>
 <li>Geographically, personal taste on concerts varies in different parts of Taiwan, with the northern region generating most of the sells.</li>
-<li>Of all the channels that sells tickets, online channel contributed to about 60 percent of the system’s total revenue.</li>
+<li>Of all the channels that sells tickets, online channel alone contributed to about 60 percent of the system’s total revenue.</li>
 <li>Discovered three different patterns when looking at the sold out rate for the 7 top-saling concert.</li>
 </ol>
 </div>
@@ -107,7 +107,7 @@ data  &lt;- fread( files, stringsAsFactors = FALSE, header = TRUE, sep = &quot;,
 </div>
 <div id="iii.-exploratory-data-analysis" class="section level2">
 <h2>III. Exploratory Data Analysis</h2>
-<p>The section exploratory data analysis addresses four main questions.</p>
+<p>The section exploratory data analysis addresses five main questions.</p>
 <ol style="list-style-type: decimal">
 <li>Total Ticket Revenue</li>
 <li>Mean of SoldPrice by Gender</li>
@@ -376,7 +376,7 @@ table(tabledata)</code></pre>
 </ul>
 <pre class="r"><code>topdata &lt;- data[ TicketCode %in% high, ]
 site &lt;- topdata[ , .( sum = sum( as.numeric(SoldPrice) ) ), by = TicketSiteCode ] %&gt;% 
-            arrange( desc(sum) )
+        arrange( desc(sum) )
 site</code></pre>
 <pre><code>##      TicketSiteCode      sum
 ##   1:          88888 77718275

@@ -5,9 +5,9 @@
 ## Excecute Summary
 After performing some exploratory analysis based on the dataset of a ticket selling system, we were able to discover four primary facts.    
 
-1. The major audience of top-saling ticketsthis for this ticket systems seems to be female customers whose age is about 30 ~ 40.
+1. The major audience segment of the top-saling tickets(concerts) for this ticket system seems to be female customers whose age is about 30 ~ 40.
 2. Geographically, personal taste on concerts varies in different parts of Taiwan, with the northern region generating most of the sells.
-3. Of all the channels that sells tickets, online channel contributed to about 60 percent of the system's total revenue.
+3. Of all the channels that sells tickets, online channel alone contributed to about 60 percent of the system's total revenue.
 4. Discovered three different patterns when looking at the sold out rate for the 7 top-saling concert. 
 
 ## I. Data Description
@@ -42,7 +42,7 @@ data  <- fread( files, stringsAsFactors = FALSE, header = TRUE, sep = ",",
 
 ## III. Exploratory Data Analysis
 
-The section exploratory data analysis addresses four main questions. 
+The section exploratory data analysis addresses five main questions. 
 
 1. Total Ticket Revenue
 2. Mean of SoldPrice by Gender
@@ -405,7 +405,7 @@ In the last part of the exploratory analysis, we wish to observe the total reven
 ```r
 topdata <- data[ TicketCode %in% high, ]
 site <- topdata[ , .( sum = sum( as.numeric(SoldPrice) ) ), by = TicketSiteCode ] %>% 
-            arrange( desc(sum) )
+        arrange( desc(sum) )
 site
 ```
 

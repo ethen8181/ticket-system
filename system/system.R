@@ -186,11 +186,11 @@ ggplot( pdata, aes( SoldDate, count, color = TicketCode ) ) + geom_line( size = 
 
 # ---------------------------------------------------------
 # cumulative sales
-pdata$cumsum <- ave( pdata$SoldPrice , pdata$TicketCode, FUN = cumsum )
+pdata$cumsum <- ave( pdata$SoldPrice, pdata$TicketCode, FUN = cumsum )
 ggplot( pdata, aes( SoldDate, as.numeric(cumsum), color = TicketCode ) ) + geom_line()
 
 # ---------------------------------------------------------
-# dynamic time warp & hierarchical clustering
+# dynamic time warp & hierarchical clustering, test code
 library(dtw)
 library(proxy)
 unique(pdata$TicketCode)
