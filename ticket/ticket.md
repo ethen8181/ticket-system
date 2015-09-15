@@ -10,7 +10,7 @@ Each variables has a very descriptive header indicating what the variables mean,
 - `SEAT_REGION_NAME` Stating the seat section in the Arena for the purchased ticket.
 - `SEX` Quite straightforward, the person's gender.
 
-## Sypnosis
+## Synopsis
 For this essay, we would like to answer two main question.    
 1. Look at the timeline of when the tickets were sold, and see if there are differences between member and non-members.     
 2. See if there are differences between male and female when it comes to the amount they spent on the tickets.
@@ -25,6 +25,13 @@ library(ggplot2)
 library(data.table)
 library(RColorBrewer)
 suppressMessages( library(dplyr) )
+```
+
+```
+## Warning: package 'dplyr' was built under R version 3.2.2
+```
+
+```r
 # set working environment
 setwd("C:/Users/ASUS/ticket-system/ticket")
 Sys.setlocale("LC_TIME", "English")

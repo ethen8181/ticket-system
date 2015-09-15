@@ -75,8 +75,8 @@ img {
 <li><code>SEX</code> Quite straightforward, the person’s gender.</li>
 </ul>
 </div>
-<div id="sypnosis" class="section level2">
-<h2>Sypnosis</h2>
+<div id="synopsis" class="section level2">
+<h2>Synopsis</h2>
 <p>For this essay, we would like to answer two main question.<br />1. Look at the timeline of when the tickets were sold, and see if there are differences between member and non-members.<br />2. See if there are differences between male and female when it comes to the amount they spent on the tickets.</p>
 </div>
 <div id="environment-setting" class="section level2">
@@ -87,8 +87,9 @@ library(tidyr)
 library(ggplot2)
 library(data.table)
 library(RColorBrewer)
-suppressMessages( library(dplyr) )
-# set working environment
+suppressMessages( library(dplyr) )</code></pre>
+<pre><code>## Warning: package 'dplyr' was built under R version 3.2.2</code></pre>
+<pre class="r"><code># set working environment
 setwd(&quot;C:/Users/ASUS/ticket-system/ticket&quot;)
 Sys.setlocale(&quot;LC_TIME&quot;, &quot;English&quot;)
 # read in the data
