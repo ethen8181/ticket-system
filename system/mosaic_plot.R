@@ -43,7 +43,7 @@ mosaic_plot <- function( df )
         geom_rect( color = "black" ) + 
         guides( fill = guide_legend( override.aes = list( colour = NA ) ) ) + # 1
         geom_text( aes( x = xtext, y = 103, label = TicketCode ), size = 4 ) + # 2
-        geom_text( data = labelrow, aes( x = xtext, y = ytext, label = paste( round(value), "%", sep = "" ) ) ) + 
+        geom_text( data = labelrow, aes( x = xtext, y = ytext, label = paste( round(value), "%", sep = "" ) ) ) + #3
         scale_fill_manual( values = brewer.pal( 4,"Set3" ) ) + 
         scale_x_continuous( breaks = c( 0, round( df$xmax ) ) ) + # 4
         labs( title = "Mosaic Graph ( Mailed Tickets to Each Region for Each Concert )", 
