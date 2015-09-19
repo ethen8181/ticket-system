@@ -25,33 +25,13 @@ The dataset used for this report is the ticket selling record for a ticket syste
 
 ```r
 # load library
-library(tidyr)
-```
-
-```
-## Warning: package 'tidyr' was built under R version 3.2.2
-```
-
-```r
 library(ggplot2)
-library(data.table)
-```
-
-```
-## Warning: package 'data.table' was built under R version 3.2.2
-```
-
-```r
-suppressMessages( library(dplyr) )
-```
-
-```
-## Warning: package 'dplyr' was built under R version 3.2.2
-```
-
-```r
+suppressWarnings( library(tidyr) )
+suppressWarnings( library(data.table) )
 suppressMessages( library(lubridate) )
+suppressWarnings( suppressMessages( library(dplyr) ) )
 # set time
+# prevent dates from printing out in Chinese
 Sys.setlocale("LC_TIME", "English")
 # set working directory
 setwd("C:/Users/ASUS/ticket-system/system")
@@ -63,7 +43,7 @@ data  <- fread( files, stringsAsFactors = FALSE, header = TRUE, sep = ",",
 
 ## III. Exploratory Data Analysis
 
-The section exploratory data analysis is split into five sub-sections. 
+The exploratory data analysis is split into five sub-sections listed in the following. 
 
 1. Total Ticket Revenue
 2. Mean of SoldPrice by Gender
@@ -361,7 +341,7 @@ combined_ticket_zip
 - **Note:** Once again, you can do a chi-square test on it, but we don't really need a statstical method to see that there are differences in the proportion of tickets that were mailed to each region between these concerts. 
 
 To get the actual numbers of proportion of tickets that were mailed to each region for each concert, we will use the prop.table function, but you probably have to convert the data frame back to a table to use it, and we will also use a mosaic plot to visualize this table. For those of you who have never heard of it, it is a plot that is widely used in many marketing departments. This chart is used to show proportion of a product market by region, and proportion of region by product.
-- The function the created the mosaic plot is sourced in, to prevent adding too many unneccessary information to the report, for those that are interested and wish to revise it for personal use, it's here at this [link](https://github.com/ethen8181/ticket-system/blob/master/system/mosaic_plot.R)
+- The function the created the mosaic plot is sourced in to prevent adding too many unneccessary information to the report. For those that are interested and wish to revise it for personal use, it's here at this [link](https://github.com/ethen8181/ticket-system/blob/master/system/mosaic_plot.R).
 
 
 ```r
@@ -501,14 +481,47 @@ ggplot( pdata, aes( SoldDate, count, color = TicketCode ) ) + geom_line( size = 
 ![](system_files/figure-html/unnamed-chunk-16-1.png) 
 
 
-**Section Conclusion:** By simply eyeballing the plot, we can categorize the sold-out rate of the tickets into three major categories. As for clustering them using the "datamining" way, it seems like Dynamic Time Warp and Functional Data Analysis both do not work well for this dataset due to missing values and inconsistency in the timespan. No expert here, so perhaps I'm wrong. And as mentioned before in this report, if you really want to cluster the ticket concert into different types, the sold-out rate shouldn't be the only attribute that you want to look at.
+**Section Conclusion:** Judging from the plot, we can categorize the sold-out rate of the tickets into three major categories. As for clustering them using the "datamining" way, it seems like Dynamic Time Warp and Functional Data Analysis both do not work well for this dataset due to missing values and inconsistency in the timespan. No expert here, so perhaps I'm wrong. And as mentioned before in this report, if you really want to cluster the ticket concert into different types, the sold-out rate shouldn't be the only attribute that you want to look at.
 
 - **Category 1:** There were no steep downturn in the sold-out rate, the tickets were gradually purchased by the consumers. This applies for TicketCode 0000010329, the concert held by [A-mei](https://en.wikipedia.org/wiki/A-mei). 
 - **Category 2:** In the beginning, there was a rapid plummet, then the intercept of the slope starts to decrease. TicketCode 0000010413 [Andrea Bocelli](https://en.wikipedia.org/wiki/Andrea_Bocelli), 0000010430 [Harlem Yu](https://en.wikipedia.org/wiki/Harlem_Yu), 0000010439 [Show Luo](https://en.wikipedia.org/wiki/Show_Luo) and 0000010440 [Turandot](https://en.wikipedia.org/?title=Turandot) falls into this category.
 - **Category 3:** The tickets were sold out in a short period of time. Such as TicketCode 0000010605 [Jay Chou](https://en.wikipedia.org/?title=Jay_Chou) and 0000010619 [Sammi Cheng](https://en.wikipedia.org/?title=Sammi_Cheng).
 
+#### V. Session Information 
 
 
+```r
+sessionInfo()
+```
 
+```
+## R version 3.2.0 (2015-04-16)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 7 x64 (build 7601) Service Pack 1
+## 
+## locale:
+## [1] LC_COLLATE=Chinese (Traditional)_Taiwan.950 
+## [2] LC_CTYPE=Chinese (Traditional)_Taiwan.950   
+## [3] LC_MONETARY=Chinese (Traditional)_Taiwan.950
+## [4] LC_NUMERIC=C                                
+## [5] LC_TIME=English_United States.1252          
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] reshape2_1.4.1     RColorBrewer_1.1-2 dplyr_0.4.3       
+## [4] lubridate_1.3.3    data.table_1.9.4   tidyr_0.3.1       
+## [7] ggplot2_1.0.0     
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_0.11.5      knitr_1.9        magrittr_1.5     MASS_7.3-40     
+##  [5] munsell_0.4.2    colorspace_1.2-4 R6_2.0.1         stringr_1.0.0   
+##  [9] plyr_1.8.1       tools_3.2.0      parallel_3.2.0   grid_3.2.0      
+## [13] gtable_0.1.2     DBI_0.3.1        htmltools_0.2.6  lazyeval_0.1.10 
+## [17] assertthat_0.1   yaml_2.1.13      digest_0.6.8     formatR_1.1     
+## [21] memoise_0.2.1    evaluate_0.5.5   rmarkdown_0.6.1  labeling_0.3    
+## [25] stringi_0.4-1    scales_0.2.4     chron_2.3-45     proto_0.3-10
+```
 
 
