@@ -31,7 +31,7 @@ ggplot( price, aes( original, sold, size = count, color = diff ) ) +
 
 # extract the data ticketcode which their sold are larger than 10^7
 high <- price$TicketCode[ (price$sold > 10^7) ]
-highdata <- data[ TicketCode %in% high, ] %>% filter( TicketSiteCode == 88888 )
+highdata <- data %>% filter( TicketCode %in% high & TicketSiteCode == 88888 )
 
 # ---------------------------------------------------------------------------------
 # analyze mean of sold price by gender
@@ -50,7 +50,7 @@ alpha <- .05
 sapply( high, function(x)
 {
     # extract only the needed column from the data
-    tmp <- highdata[ TicketCode == x, ] %>% select( SoldPrice, Gender )
+    tmp <- highdata %>% filter( TicketCode == x ) %>% select( SoldPrice, Gender )
     # check the equality of variance for the t-test
     boolean <- var.test( as.numeric(SoldPrice) ~ as.factor(Gender), data = tmp, 
                alternative = "two.sided" )$p.value > alpha
@@ -70,7 +70,7 @@ aggregate( as.numeric(SoldPrice) ~ TicketCode + Gender, data = highdata, FUN = s
     arrange( TicketCode )
 
 # extract one of the ticket concert and look at its age distribution 
-agedata <- highdata[ TicketCode == high[1], ] %>% select( SoldPrice, Gender, age )
+agedata <- highdata %>% filter( TicketCode == high[1] ) %>% select( SoldPrice, Gender, age )
 # age distribution histogram by gender
 ggplot( agedata, aes( age, fill = Gender ) ) + geom_histogram() + facet_grid( ~ Gender )
 
@@ -146,7 +146,7 @@ table(tabledata)
 # ------------------------------------------------------------------
 # analyze TicketSiteCode
 
-topdata <- data[ TicketCode %in% high, ]
+topdata <- data %>% filter( TicketCode %in% high )
 site <- topdata[ , .( sum = sum( as.numeric(SoldPrice) ) ), by = TicketSiteCode ] %>% arrange( desc(sum) )
 site
 sapply( c( .7, .8 ), function(x)
@@ -190,7 +190,7 @@ pdata$cumsum <- ave( pdata$SoldPrice, pdata$TicketCode, FUN = cumsum )
 ggplot( pdata, aes( SoldDate, as.numeric(cumsum), color = TicketCode ) ) + geom_line()
 
 # ---------------------------------------------------------
-# dynamic time warp & hierarchical clustering, test code
+# dynamic time warp & hierarchical clustering, failed test code not included 
 library(dtw)
 library(proxy)
 unique(pdata$TicketCode)

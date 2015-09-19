@@ -17,14 +17,14 @@ After performing some exploratory analysis based on the dataset of a ticket sell
 4. Discovered three different patterns when looking at the sold out rate for the 7 top-saling concert. 
 
 ## I. Data Description
-This dataset used for this report is the ticket selling record for a ticket system for January to April. It consists of 221722 observations and 13 variables. The column names are already quite descriptive of what each variables stands for so detailed-explanation will not be included. However, there are a couple of things that may need some explaining.
+The dataset used for this report is the ticket selling record for a ticket system for January to April. It consists of 221722 observations and 13 variables. The column names should already be quite descriptive of what each variables stands for, so a variable dictionary will not be included. However, there are a couple of things that may need some explaining.
 
-- `TicketCode` With you want to aggregate the data of the same concert you should do it by using this column. Do not use the `TicketName` column, they might be different for the same concert due to marketing reasons ( making the name look cuter promotes sales...? ). 
-- `TicketSiteCode` The Code 88888 tells us that the ticket was sold by online platform, while all the other site code each represents different physical channel ( e.g. convenience stores, bookstores etc. ).
-- For `Gender` and `BirthYear` column, unless the column `TicketSiteCode` is 88888 for that corresponding row, then the values for these two columns will have no meaning. THe values that appears for the data cell is just the default value. Therefore, if you want to conduct analysis based on the sex and age of the consumers, you should only include the observations where its `TicketSiteCode` is 88888.
+- `TicketCode` If you want to aggregate the data of the same concert you should do it by using this column. Do not use the `TicketName` column, they might be different for the same concert due to marketing reasons ( making the name look cuter promotes sales...? ). 
+- `TicketSiteCode` The code number 88888 tells us that the ticket was sold by online platform, while all the other site code each represents different physical channel ( e.g. convenience stores, bookstores etc. ).
+- For `Gender` and `BirthYear` column, unless the column `TicketSiteCode` is 88888 for that corresponding row, then the values for these two columns will be meaningless. The number that appears for the data cell is just the default value set by the ticket system. Therefore, if you want to conduct analysis based on the sex and age of the consumers, you should only include the observations where its `TicketSiteCode` is 88888.
 - `ZipCode` The address zipcode for which the ticket was sent to. Only tickets that were bought on online platform will have data recorded for this column, the corresponding city name for the zipcode is in the `City` column. 
 - To preprocess the correct time for which the ticket was bought requires combining the Year, Month, Date part from the `SoldDate` column and Hour, Minute, Second from the `SoldTime` column. The original database was somehow messed up, and splitted it into two columns.  
-- `SoldPrice` The actual sold price of the ticket might be different to the original price due to reasons such as the member being a VIP member of the ticket system or the ticket site was giving out discounts if the tickets were purchase at those specific sites. Another reason is that the tickets were given for out for free ( will be recorded as 0 or 10 for the tax in the data cell ).
+- `SoldPrice` The actual sold price of the ticket might be different to the original price due to reasons such as the member being a VIP member of the ticket system or the ticket site was giving out discounts if the tickets were purchase at those specific sites. Another reason is that the tickets were given for out for free ( will be recorded as 0 or 10 in the data cell due to tax ).
 - `URL` Adding http://www.ticket.com.tw/ before the url should lead you to the correct website.
 
 ## II. Environment Setting 
@@ -49,7 +49,7 @@ data  <- fread( files, stringsAsFactors = FALSE, header = TRUE, sep = ",",
 
 ## III. Exploratory Data Analysis
 
-The section exploratory data analysis addresses five main questions. 
+The section exploratory data analysis is split into five sub-sections. 
 
 1. Total Ticket Revenue
 2. Mean of SoldPrice by Gender
@@ -92,7 +92,7 @@ ggplot( price, aes( original, sold, size = count, color = diff ) ) +
 
 # top-saling TicketCode
 high <- price$TicketCode[ (price$sold > 10^7) ]
-highdata <- data[ TicketCode %in% high, ] %>% filter( TicketSiteCode == 88888 )
+highdata <- data %>% filter( TicketCode %in% high & TicketSiteCode == 88888 )
 
 ```
 
@@ -122,7 +122,7 @@ alpha <- .05
 sapply( high, function(x)
 {
     # extract only the needed column from the data
-    tmp <- highdata[ TicketCode == x, ] %>% select( SoldPrice, Gender )
+    tmp <- highdata %>% filter( TicketCode == x ) %>% select( SoldPrice, Gender )
     # check the equality of variance for the t-test
     boolean <- var.test( as.numeric(SoldPrice) ~ as.factor(Gender), data = tmp, 
                alternative = "two.sided" )$p.value > alpha
@@ -158,7 +158,7 @@ highdata[ , age := year(today()) - as.numeric(BirthYear) ]
 ```{r}
 
 # extract one of the ticket concert and look at its age distribution 
-agedata <- highdata[ TicketCode == high[1], ] %>% select( SoldPrice, Gender, age )
+agedata <- highdata %>% filter( TicketCode == high[1] ) %>% select( SoldPrice, Gender, age )
 # age distribution histogram by gender
 ggplot( agedata, aes( age, fill = Gender ) ) + geom_histogram() + facet_grid( ~ Gender ) + 
     ggtitle("Number of Tickets Purchased For Different Age Levels and Genders")
@@ -203,7 +203,7 @@ For this section, we will like look at things from a geographic perspective. For
 
 - A quick review in case you've forgotten. `highdata` contains the TicketCode that generated more than 10^7 to the total revenue and only the records where the tickets were sold online (TicketSiteCode = 88888 ). 
 
-- For this section, we will fist add a new column zipcity to `highdata`. To begin with, we'll extract the first digit of the [zipcode](http://www.easytravel.com.tw/postid_search.asp), the first digit represents the city and the rest are which district in the city, but here we're just going to look at the zipcode from the city-level. 
+- `zipcity` For this section, we will fist add a new column to `highdata`. We'll extract the first digit of the [Zipcode](http://www.easytravel.com.tw/postid_search.asp) column, the first digit represents the city and the rest are which district in the city, but here we're just going to look at the zipcode from the city-level. 
 - `zipcodedata` Since the ZipCode column has some noise in them for reasons beyond knowledge (e.g. NA, English letters, random punctuation marks ), so for analyzing convenience, we'll simply convert them into numbers and exclude the ones that were coerced to NAs in the data type transformation process.
 - The suppressWarnings function below is used just to avoid printing the warning messages in the report, it does not have affect on the result.
 
@@ -299,12 +299,12 @@ So, next time a similar concert is about to be sold ( or selling ), digital mark
 
 #### 5. Analyze TicketSiteCode
 
-In the last part of the exploratory analysis, we wish to observe the total revenue generated by each TicketSite ? Also how many TicketSite leads to the majority of the revenue.
+In the last part of the exploratory analysis, we wish to observe the total revenue generated by each TicketSite, also how many TicketSite contributes to the majority of the revenue.
 
 - `topdata` Top-saling concert data ( total sales larger than 10^7 ), including all the TicketSite.
 - `site` Total revenue generated by each ticketsite.
 ```{r}
-topdata <- data[ TicketCode %in% high, ]
+topdata <- data %>% filter( TicketCode %in% high )
 site <- topdata[ , .( sum = sum( as.numeric(SoldPrice) ) ), by = TicketSiteCode ] %>% 
         arrange( desc(sum) )
 site

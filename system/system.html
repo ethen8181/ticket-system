@@ -77,25 +77,28 @@ img {
 </div>
 <div id="i.-data-description" class="section level2">
 <h2>I. Data Description</h2>
-<p>This dataset used for this report is the ticket selling record for a ticket system for January to April. It consists of 221722 observations and 13 variables. The column names are already quite descriptive of what each variables stands for so detailed-explanation will not be included. However, there are a couple of things that may need some explaining.</p>
+<p>The dataset used for this report is the ticket selling record for a ticket system for January to April. It consists of 221722 observations and 13 variables. The column names should already be quite descriptive of what each variables stands for, so a variable dictionary will not be included. However, there are a couple of things that may need some explaining.</p>
 <ul>
-<li><code>TicketCode</code> With you want to aggregate the data of the same concert you should do it by using this column. Do not use the <code>TicketName</code> column, they might be different for the same concert due to marketing reasons ( making the name look cuter promotes sales…? ).</li>
-<li><code>TicketSiteCode</code> The Code 88888 tells us that the ticket was sold by online platform, while all the other site code each represents different physical channel ( e.g. convenience stores, bookstores etc. ).</li>
-<li>For <code>Gender</code> and <code>BirthYear</code> column, unless the column <code>TicketSiteCode</code> is 88888 for that corresponding row, then the values for these two columns will have no meaning. THe values that appears for the data cell is just the default value. Therefore, if you want to conduct analysis based on the sex and age of the consumers, you should only include the observations where its <code>TicketSiteCode</code> is 88888.</li>
+<li><code>TicketCode</code> If you want to aggregate the data of the same concert you should do it by using this column. Do not use the <code>TicketName</code> column, they might be different for the same concert due to marketing reasons ( making the name look cuter promotes sales…? ).</li>
+<li><code>TicketSiteCode</code> The code number 88888 tells us that the ticket was sold by online platform, while all the other site code each represents different physical channel ( e.g. convenience stores, bookstores etc. ).</li>
+<li>For <code>Gender</code> and <code>BirthYear</code> column, unless the column <code>TicketSiteCode</code> is 88888 for that corresponding row, then the values for these two columns will be meaningless. The number that appears for the data cell is just the default value set by the ticket system. Therefore, if you want to conduct analysis based on the sex and age of the consumers, you should only include the observations where its <code>TicketSiteCode</code> is 88888.</li>
 <li><code>ZipCode</code> The address zipcode for which the ticket was sent to. Only tickets that were bought on online platform will have data recorded for this column, the corresponding city name for the zipcode is in the <code>City</code> column.</li>
 <li>To preprocess the correct time for which the ticket was bought requires combining the Year, Month, Date part from the <code>SoldDate</code> column and Hour, Minute, Second from the <code>SoldTime</code> column. The original database was somehow messed up, and splitted it into two columns.<br /></li>
-<li><code>SoldPrice</code> The actual sold price of the ticket might be different to the original price due to reasons such as the member being a VIP member of the ticket system or the ticket site was giving out discounts if the tickets were purchase at those specific sites. Another reason is that the tickets were given for out for free ( will be recorded as 0 or 10 for the tax in the data cell ).</li>
+<li><code>SoldPrice</code> The actual sold price of the ticket might be different to the original price due to reasons such as the member being a VIP member of the ticket system or the ticket site was giving out discounts if the tickets were purchase at those specific sites. Another reason is that the tickets were given for out for free ( will be recorded as 0 or 10 in the data cell due to tax ).</li>
 <li><code>URL</code> Adding <a href="http://www.ticket.com.tw/" class="uri">http://www.ticket.com.tw/</a> before the url should lead you to the correct website.</li>
 </ul>
 </div>
 <div id="ii.-environment-setting" class="section level2">
 <h2>II. Environment Setting</h2>
 <pre class="r"><code># load library
-library(tidyr)
-library(ggplot2)
-library(data.table)
-suppressMessages( library(dplyr) )
-suppressMessages( library(lubridate) )
+library(tidyr)</code></pre>
+<pre><code>## Warning: package 'tidyr' was built under R version 3.2.2</code></pre>
+<pre class="r"><code>library(ggplot2)
+library(data.table)</code></pre>
+<pre><code>## Warning: package 'data.table' was built under R version 3.2.2</code></pre>
+<pre class="r"><code>suppressMessages( library(dplyr) )</code></pre>
+<pre><code>## Warning: package 'dplyr' was built under R version 3.2.2</code></pre>
+<pre class="r"><code>suppressMessages( library(lubridate) )
 # set time
 Sys.setlocale(&quot;LC_TIME&quot;, &quot;English&quot;)
 # set working directory
@@ -107,7 +110,7 @@ data  &lt;- fread( files, stringsAsFactors = FALSE, header = TRUE, sep = &quot;,
 </div>
 <div id="iii.-exploratory-data-analysis" class="section level2">
 <h2>III. Exploratory Data Analysis</h2>
-<p>The section exploratory data analysis addresses five main questions.</p>
+<p>The section exploratory data analysis is split into five sub-sections.</p>
 <ol style="list-style-type: decimal">
 <li>Total Ticket Revenue</li>
 <li>Mean of SoldPrice by Gender</li>
@@ -154,7 +157,7 @@ ggplot( price, aes( original, sold, size = count, color = diff ) ) +
 </ul>
 <pre class="r"><code># top-saling TicketCode
 high &lt;- price$TicketCode[ (price$sold &gt; 10^7) ]
-highdata &lt;- data[ TicketCode %in% high, ] %&gt;% filter( TicketSiteCode == 88888 )</code></pre>
+highdata &lt;- data %&gt;% filter( TicketCode %in% high &amp; TicketSiteCode == 88888 )</code></pre>
 </div>
 <div id="mean-of-soldprice-by-gender" class="section level4">
 <h4>2. Mean of SoldPrice by Gender</h4>
@@ -179,7 +182,7 @@ alpha &lt;- .05
 sapply( high, function(x)
 {
     # extract only the needed column from the data
-    tmp &lt;- highdata[ TicketCode == x, ] %&gt;% select( SoldPrice, Gender )
+    tmp &lt;- highdata %&gt;% filter( TicketCode == x ) %&gt;% select( SoldPrice, Gender )
     # check the equality of variance for the t-test
     boolean &lt;- var.test( as.numeric(SoldPrice) ~ as.factor(Gender), data = tmp, 
                alternative = &quot;two.sided&quot; )$p.value &gt; alpha
@@ -228,7 +231,7 @@ aggregate( as.numeric(SoldPrice) ~ TicketCode + Gender, data = highdata, FUN = s
 <pre class="r"><code># add the age of the person using the BirthYear column
 highdata[ , age := year(today()) - as.numeric(BirthYear) ]</code></pre>
 <pre class="r"><code># extract one of the ticket concert and look at its age distribution 
-agedata &lt;- highdata[ TicketCode == high[1], ] %&gt;% select( SoldPrice, Gender, age )
+agedata &lt;- highdata %&gt;% filter( TicketCode == high[1] ) %&gt;% select( SoldPrice, Gender, age )
 # age distribution histogram by gender
 ggplot( agedata, aes( age, fill = Gender ) ) + geom_histogram() + facet_grid( ~ Gender ) + 
     ggtitle(&quot;Number of Tickets Purchased For Different Age Levels and Genders&quot;)</code></pre>
@@ -269,7 +272,7 @@ ggplot( sum1, aes( Gender, cut, color = Gender, size = sum ) ) +
 <p>For this section, we will like look at things from a geographic perspective. For those people that have purchased the concert tickets online, where do they live? We assume that the zipcode should reveal some thoughts on that.</p>
 <ul>
 <li><p>A quick review in case you’ve forgotten. <code>highdata</code> contains the TicketCode that generated more than 10^7 to the total revenue and only the records where the tickets were sold online (TicketSiteCode = 88888 ).</p></li>
-<li>For this section, we will fist add a new column zipcity to <code>highdata</code>. To begin with, we’ll extract the first digit of the <a href="http://www.easytravel.com.tw/postid_search.asp">zipcode</a>, the first digit represents the city and the rest are which district in the city, but here we’re just going to look at the zipcode from the city-level.</li>
+<li><code>zipcity</code> For this section, we will fist add a new column to <code>highdata</code>. We’ll extract the first digit of the <a href="http://www.easytravel.com.tw/postid_search.asp">Zipcode</a> column, the first digit represents the city and the rest are which district in the city, but here we’re just going to look at the zipcode from the city-level.</li>
 <li><code>zipcodedata</code> Since the ZipCode column has some noise in them for reasons beyond knowledge (e.g. NA, English letters, random punctuation marks ), so for analyzing convenience, we’ll simply convert them into numbers and exclude the ones that were coerced to NAs in the data type transformation process.</li>
 <li><p>The suppressWarnings function below is used just to avoid printing the warning messages in the report, it does not have affect on the result.</p></li>
 </ul>
@@ -369,12 +372,12 @@ table(tabledata)</code></pre>
 </div>
 <div id="analyze-ticketsitecode" class="section level4">
 <h4>5. Analyze TicketSiteCode</h4>
-<p>In the last part of the exploratory analysis, we wish to observe the total revenue generated by each TicketSite ? Also how many TicketSite leads to the majority of the revenue.</p>
+<p>In the last part of the exploratory analysis, we wish to observe the total revenue generated by each TicketSite, also how many TicketSite contributes to the majority of the revenue.</p>
 <ul>
 <li><code>topdata</code> Top-saling concert data ( total sales larger than 10^7 ), including all the TicketSite.</li>
 <li><code>site</code> Total revenue generated by each ticketsite.</li>
 </ul>
-<pre class="r"><code>topdata &lt;- data[ TicketCode %in% high, ]
+<pre class="r"><code>topdata &lt;- data %&gt;% filter( TicketCode %in% high )
 site &lt;- topdata[ , .( sum = sum( as.numeric(SoldPrice) ) ), by = TicketSiteCode ] %&gt;% 
         arrange( desc(sum) )
 site</code></pre>
