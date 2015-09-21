@@ -3,6 +3,7 @@ title: "Ticket System Data Analysis"
 output:
   html_document:
     keep_md: yes
+    toc: yes
   pdf_document: default
 ---
 
@@ -321,7 +322,7 @@ sapply( c( .7, .8 ), function(x)
 - **Note1:** TicketSiteCode 88888 ( the internet ) accounts for `r round( site$sum[1] / sum(site$sum)*100, 2)` percent of the ticket system's total revenue, well it is after all an online ticket system so no surprise there. As for the TicketSite that had extremely inferior amount of revenues, maybe it is time to shut them down.
 - **Note2:** The long tail theory where a small proportion of the products generates large proportion of the revenues also holds for this ticket system. Where 0.5 percent of the ticketsite contributes to 70 percent of the sales and 4.5 percent contributes to 80.
 
-#### IV. Time Series Analysis
+## IV. Time Series Analysis
 
 For this section we will continue using subset data `topdata`, which includes the ticket selling record of the 7 top-saling tickets in all the TicketSite. In the beginning of the report, it was said that the SoldDate and SoldTime column happens to be messy and requires tidying before conducting the analysis. The steps for doing that is described in the following.
 
@@ -367,7 +368,7 @@ ggplot( pdata, aes( SoldDate, count, color = TicketCode ) ) + geom_line( size = 
 - **Category 2:** In the beginning, there was a rapid plummet, then the intercept of the slope starts to decrease. TicketCode 0000010413 [Andrea Bocelli](https://en.wikipedia.org/wiki/Andrea_Bocelli), 0000010430 [Harlem Yu](https://en.wikipedia.org/wiki/Harlem_Yu), 0000010439 [Show Luo](https://en.wikipedia.org/wiki/Show_Luo) and 0000010440 [Turandot](https://en.wikipedia.org/?title=Turandot) falls into this category.
 - **Category 3:** The tickets were sold out in a short period of time. Such as TicketCode 0000010605 [Jay Chou](https://en.wikipedia.org/?title=Jay_Chou) and 0000010619 [Sammi Cheng](https://en.wikipedia.org/?title=Sammi_Cheng).
 
-#### V. Session Information 
+## V. Session Information 
 
 ```{r}
 
