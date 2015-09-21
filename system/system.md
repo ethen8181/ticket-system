@@ -30,15 +30,16 @@ suppressWarnings( library(tidyr) )
 suppressWarnings( library(data.table) )
 suppressMessages( library(lubridate) )
 suppressWarnings( suppressMessages( library(dplyr) ) )
+# prevent encoding problems
+Sys.setlocale("LC_ALL", "C")
 # set time
 # prevent dates from printing out in Chinese
-Sys.setlocale("LC_TIME", "English")
+# Sys.setlocale("LC_TIME", "English")
 # set working directory
-setwd("C:/Users/ASUS/ticket-system/system")
+setwd("/Users/ethen/ticket-system/system")
 # read in the files
 files <- list.files( "data", full.names = TRUE )
-data  <- fread( files, stringsAsFactors = FALSE, header = TRUE, sep = ",", 
-                colClasses = "character" )
+data  <- fread( files, stringsAsFactors = FALSE, header = TRUE, sep = ",", colClasses = "character" )
 ```
 
 ## III. Exploratory Data Analysis
@@ -82,10 +83,10 @@ head(price)
 ```r
 # top 50 plot
 ggplot( price, aes( original, sold, size = count, color = diff ) ) + 
-    geom_point( alpha = .6 ) + 
-    scale_size_continuous( range = c( 5, 20 ) ) + 
-    scale_color_gradient( low = "lightblue", high = "darkblue" ) + 
-    ggtitle("Top 50 Ticket Revenue")
+geom_point( alpha = .6 ) + 
+scale_size_continuous( range = c( 5, 20 ) ) + 
+scale_color_gradient( low = "lightblue", high = "darkblue" ) + 
+ggtitle("Top 50 Ticket Revenue")
 ```
 
 ![](system_files/figure-html/unnamed-chunk-2-1.png) 
@@ -116,8 +117,8 @@ mean1 <- aggregate( as.numeric(SoldPrice) ~ TicketCode + Gender, data = highdata
 names(mean1)[3] <- "Price"
 # plot of the mean 
 ggplot( mean1, aes( as.factor(Gender), Price, color = TicketCode, group = TicketCode ) ) + 
-    geom_point( size = 5 ) + geom_line() + xlab("Gender") + 
-    ggtitle("Average Price Spent on Purchasing Tickets Between Genders")
+geom_point( size = 5 ) + geom_line() + xlab("Gender") + 
+ggtitle("Average Price Spent on Purchasing Tickets Between Genders")
 ```
 
 ![](system_files/figure-html/unnamed-chunk-4-1.png) 
@@ -206,6 +207,11 @@ ggplot( agedata, aes( age, fill = Gender ) ) + geom_histogram() + facet_grid( ~ 
     ggtitle("Number of Tickets Purchased For Different Age Levels and Genders")
 ```
 
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+```
+
 ![](system_files/figure-html/unnamed-chunk-8-1.png) 
 
 - **Note1:** To avoid making the report too lengthy, the age distribution histogram is depicted for only one of the TicketCode, the first one from the `highdata` to be exact. All the other histogram looks quite similar to it, so we will use it to draw some hypotheses.
@@ -234,10 +240,10 @@ sum1 <- highdata[ , .( sum = sum( as.numeric(SoldPrice) ) ),
                 by = list( TicketCode, Gender, cut ) ] %>% arrange( TicketCode, cut )
 # plot
 ggplot( sum1, aes( Gender, cut, color = Gender, size = sum ) ) + 
-    geom_point( alpha = .8 ) + facet_grid( ~ TicketCode ) + 
-    scale_size_continuous( range = c( 5, 20 ) ) + 
-    labs( y = "Age Levels", 
-          title = "Total Amount Spent on Tickets for each Age Level between Genders" )
+geom_point( alpha = .8 ) + facet_grid( ~ TicketCode ) + 
+scale_size_continuous( range = c( 5, 20 ) ) + 
+labs( y = "Age Levels", 
+      title = "Total Amount Spent on Tickets for each Age Level between Genders" )
 ```
 
 ![](system_files/figure-html/unnamed-chunk-9-1.png) 
@@ -275,8 +281,8 @@ addmargins(gender_zip)
 ##       zipcity
 ## Gender     0     1     2     3     4     5     6     7     8     9   Sum
 ##    F     425  6253  4851  2169  1838   387   230   477   953   175 17758
-##    M     126  3157  2561  1377  1156   227   149   275   514   149  9691
-##    Sum   551  9410  7412  3546  2994   614   379   752  1467   324 27449
+##    M     126  3158  2561  1378  1156   227   149   275   514   149  9693
+##    Sum   551  9411  7412  3547  2994   614   379   752  1467   324 27451
 ```
 
 - **Note1:** From the contingency table, we can see that the tickets were mainly mailed to address located in Taipei City ( zipcity = 1 ). Accounting for about thirty percent of the tickets that were purchased online.
@@ -294,7 +300,7 @@ chisq.test(gender_zip)
 ## 	Pearson's Chi-squared test
 ## 
 ## data:  gender_zip
-## X-squared = 105.67, df = 9, p-value < 2.2e-16
+## X-squared = 105.76, df = 9, p-value < 2.2e-16
 ```
 
 - **Note:** OK, the p-value is below .05, this provides strong evidence to suggest that when looking at the customers' behavior from a geographic viewpoint, men and women have difference preferences towards concert tickets.
@@ -329,9 +335,9 @@ combined_ticket_zip
 
 ```
 ##   TicketCode North  Mid South East
-## 1 0000010329  1340  524   663   65
+## 1 0000010329  1341  524   663   65
 ## 2 0000010413  2079  395   124   27
-## 3 0000010430  2311  711   180   35
+## 3 0000010430  2311  712   180   35
 ## 4 0000010439  2795 1131   339  220
 ## 5 0000010440  1915 2566   555   60
 ## 6 0000010605  4238 1322   518  359
@@ -355,9 +361,9 @@ prop.table( longtable, 1 )
 ```
 ##             Region
 ## TicketCode        North        Mid      South       East
-##   0000010329 0.51697531 0.20216049 0.25578704 0.02507716
+##   0000010329 0.51716159 0.20208253 0.25568839 0.02506749
 ##   0000010413 0.79200000 0.15047619 0.04723810 0.01028571
-##   0000010430 0.71393265 0.21964782 0.05560704 0.01081248
+##   0000010430 0.71371217 0.21988882 0.05558987 0.01080914
 ##   0000010439 0.62318841 0.25217391 0.07558528 0.04905240
 ##   0000010440 0.37578493 0.50353218 0.10890895 0.01177394
 ##   0000010605 0.65838123 0.20537517 0.08047227 0.05577132
@@ -366,7 +372,7 @@ prop.table( longtable, 1 )
 
 ```r
 # load the R file that contains the function that does the plotting
-source("mosaic_plot.R")
+suppressMessages( source("mosaic_plot.R") )
 mosaic_plot(combined_ticket_zip)
 ```
 
@@ -495,33 +501,29 @@ sessionInfo()
 ```
 
 ```
-## R version 3.2.0 (2015-04-16)
-## Platform: x86_64-w64-mingw32/x64 (64-bit)
-## Running under: Windows 7 x64 (build 7601) Service Pack 1
+## R version 3.2.2 (2015-08-14)
+## Platform: x86_64-apple-darwin13.4.0 (64-bit)
+## Running under: OS X 10.10.4 (Yosemite)
 ## 
 ## locale:
-## [1] LC_COLLATE=Chinese (Traditional)_Taiwan.950 
-## [2] LC_CTYPE=Chinese (Traditional)_Taiwan.950   
-## [3] LC_MONETARY=Chinese (Traditional)_Taiwan.950
-## [4] LC_NUMERIC=C                                
-## [5] LC_TIME=English_United States.1252          
+## [1] C/C/C/C/C/en_US.UTF-8
 ## 
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
 ## [1] reshape2_1.4.1     RColorBrewer_1.1-2 dplyr_0.4.3       
-## [4] lubridate_1.3.3    data.table_1.9.4   tidyr_0.3.1       
-## [7] ggplot2_1.0.0     
+## [4] lubridate_1.3.3    data.table_1.9.6   tidyr_0.3.1       
+## [7] ggplot2_1.0.1     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.11.5      knitr_1.9        magrittr_1.5     MASS_7.3-40     
-##  [5] munsell_0.4.2    colorspace_1.2-4 R6_2.0.1         stringr_1.0.0   
-##  [9] plyr_1.8.1       tools_3.2.0      parallel_3.2.0   grid_3.2.0      
+##  [1] Rcpp_0.12.1      knitr_1.11       magrittr_1.5     MASS_7.3-43     
+##  [5] munsell_0.4.2    colorspace_1.2-6 R6_2.1.1         stringr_1.0.0   
+##  [9] plyr_1.8.3       tools_3.2.2      parallel_3.2.2   grid_3.2.2      
 ## [13] gtable_0.1.2     DBI_0.3.1        htmltools_0.2.6  lazyeval_0.1.10 
-## [17] assertthat_0.1   yaml_2.1.13      digest_0.6.8     formatR_1.1     
-## [21] memoise_0.2.1    evaluate_0.5.5   rmarkdown_0.6.1  labeling_0.3    
-## [25] stringi_0.4-1    scales_0.2.4     chron_2.3-45     proto_0.3-10
+## [17] assertthat_0.1   yaml_2.1.13      digest_0.6.8     formatR_1.2.1   
+## [21] memoise_0.2.1    evaluate_0.8     rmarkdown_0.8    labeling_0.3    
+## [25] stringi_0.5-5    scales_0.3.0     chron_2.3-47     proto_0.3-10
 ```
 
 

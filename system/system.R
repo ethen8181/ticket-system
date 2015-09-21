@@ -4,8 +4,8 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 
-Sys.setlocale("LC_TIME", "English")
-setwd("C:/Users/ASUS/ticket-system/system")
+Sys.setlocale("LC_ALL", "C")
+setwd("/Users/ethen/ticket-system/system")
 
 files <- list.files( "data", full.names = TRUE )
 data  <- fread( files, stringsAsFactors = FALSE, header = TRUE, sep = ",", colClasses = "character" )

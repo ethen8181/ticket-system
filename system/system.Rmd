@@ -36,15 +36,16 @@ suppressWarnings( library(tidyr) )
 suppressWarnings( library(data.table) )
 suppressMessages( library(lubridate) )
 suppressWarnings( suppressMessages( library(dplyr) ) )
+# prevent encoding problems
+Sys.setlocale("LC_ALL", "C")
 # set time
 # prevent dates from printing out in Chinese
-Sys.setlocale("LC_TIME", "English")
+# Sys.setlocale("LC_TIME", "English")
 # set working directory
-setwd("C:/Users/ASUS/ticket-system/system")
+setwd("/Users/ethen/ticket-system/system")
 # read in the files
 files <- list.files( "data", full.names = TRUE )
-data  <- fread( files, stringsAsFactors = FALSE, header = TRUE, sep = ",", 
-                colClasses = "character" )
+data  <- fread( files, stringsAsFactors = FALSE, header = TRUE, sep = ",", colClasses = "character" )
 
 ```
 
@@ -75,10 +76,10 @@ price <- data[ , .( original = sum( as.numeric(OriginalPrice) ),
 head(price)
 # top 50 plot
 ggplot( price, aes( original, sold, size = count, color = diff ) ) + 
-    geom_point( alpha = .6 ) + 
-    scale_size_continuous( range = c( 5, 20 ) ) + 
-    scale_color_gradient( low = "lightblue", high = "darkblue" ) + 
-    ggtitle("Top 50 Ticket Revenue")
+geom_point( alpha = .6 ) + 
+scale_size_continuous( range = c( 5, 20 ) ) + 
+scale_color_gradient( low = "lightblue", high = "darkblue" ) + 
+ggtitle("Top 50 Ticket Revenue")
 
 ```
 
@@ -109,8 +110,8 @@ mean1 <- aggregate( as.numeric(SoldPrice) ~ TicketCode + Gender, data = highdata
 names(mean1)[3] <- "Price"
 # plot of the mean 
 ggplot( mean1, aes( as.factor(Gender), Price, color = TicketCode, group = TicketCode ) ) + 
-    geom_point( size = 5 ) + geom_line() + xlab("Gender") + 
-    ggtitle("Average Price Spent on Purchasing Tickets Between Genders")
+geom_point( size = 5 ) + geom_line() + xlab("Gender") + 
+ggtitle("Average Price Spent on Purchasing Tickets Between Genders")
 
 ```
 
@@ -183,10 +184,10 @@ sum1 <- highdata[ , .( sum = sum( as.numeric(SoldPrice) ) ),
                 by = list( TicketCode, Gender, cut ) ] %>% arrange( TicketCode, cut )
 # plot
 ggplot( sum1, aes( Gender, cut, color = Gender, size = sum ) ) + 
-    geom_point( alpha = .8 ) + facet_grid( ~ TicketCode ) + 
-    scale_size_continuous( range = c( 5, 20 ) ) + 
-    labs( y = "Age Levels", 
-          title = "Total Amount Spent on Tickets for each Age Level between Genders" )
+geom_point( alpha = .8 ) + facet_grid( ~ TicketCode ) + 
+scale_size_continuous( range = c( 5, 20 ) ) + 
+labs( y = "Age Levels", 
+      title = "Total Amount Spent on Tickets for each Age Level between Genders" )
 
 ```
 
@@ -275,7 +276,7 @@ longtable  <- xtabs( Freq ~ TicketCode + Region, data = longformat )
 # use prop.table
 prop.table( longtable, 1 )
 # load the R file that contains the function that does the plotting
-source("mosaic_plot.R")
+suppressMessages( source("mosaic_plot.R") )
 mosaic_plot(combined_ticket_zip)
 
 ```
