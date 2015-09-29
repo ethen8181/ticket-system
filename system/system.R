@@ -5,6 +5,10 @@ library(dplyr)
 library(ggplot2)
 
 Sys.setlocale("LC_ALL", "C")
+
+# prevent dates from printing out in Chinese
+# Sys.setlocale("LC_TIME", "English")
+
 setwd("/Users/ethen/ticket-system/system")
 
 files <- list.files( "data", full.names = TRUE )

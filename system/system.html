@@ -74,7 +74,7 @@ img {
 </ul>
 </div>
 
-<p><strong>2015.7.12 Ethen Liu</strong></p>
+<p><strong>2015.9.12 Ethen Liu</strong></p>
 <div id="excecute-summary" class="section level2">
 <h2>Excecute Summary</h2>
 <p>After performing some exploratory analysis based on the dataset of a ticket selling system, we were able to discover four primary facts.</p>
@@ -108,9 +108,6 @@ suppressMessages( library(lubridate) )
 suppressWarnings( suppressMessages( library(dplyr) ) )
 # prevent encoding problems
 Sys.setlocale(&quot;LC_ALL&quot;, &quot;C&quot;)
-# set time
-# prevent dates from printing out in Chinese
-# Sys.setlocale(&quot;LC_TIME&quot;, &quot;English&quot;)
 # set working directory
 setwd(&quot;/Users/ethen/ticket-system/system&quot;)
 # read in the files
@@ -463,7 +460,7 @@ ggplot( pdata, aes( SoldDate, count, color = TicketCode ) ) + geom_line( size = 
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 3.2.2 (2015-08-14)
 ## Platform: x86_64-apple-darwin13.4.0 (64-bit)
-## Running under: OS X 10.10.4 (Yosemite)
+## Running under: OS X 10.10.5 (Yosemite)
 ## 
 ## locale:
 ## [1] C/C/C/C/C/en_US.UTF-8

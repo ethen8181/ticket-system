@@ -1,6 +1,6 @@
 # Ticket System Data Analysis
 
-**2015.7.12 Ethen Liu**
+**2015.9.12 Ethen Liu**
 
 ## Excecute Summary
 After performing some exploratory analysis based on the dataset of a ticket selling system, we were able to discover four primary facts.    
@@ -32,9 +32,6 @@ suppressMessages( library(lubridate) )
 suppressWarnings( suppressMessages( library(dplyr) ) )
 # prevent encoding problems
 Sys.setlocale("LC_ALL", "C")
-# set time
-# prevent dates from printing out in Chinese
-# Sys.setlocale("LC_TIME", "English")
 # set working directory
 setwd("/Users/ethen/ticket-system/system")
 # read in the files
@@ -503,7 +500,7 @@ sessionInfo()
 ```
 ## R version 3.2.2 (2015-08-14)
 ## Platform: x86_64-apple-darwin13.4.0 (64-bit)
-## Running under: OS X 10.10.4 (Yosemite)
+## Running under: OS X 10.10.5 (Yosemite)
 ## 
 ## locale:
 ## [1] C/C/C/C/C/en_US.UTF-8
