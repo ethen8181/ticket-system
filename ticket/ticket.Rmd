@@ -30,13 +30,16 @@ library(ggplot2)
 library(data.table)
 library(RColorBrewer)
 suppressMessages( library(dplyr) )
+
 # set working environment
-setwd("C:/Users/ASUS/ticket-system/ticket")
-Sys.setlocale("LC_TIME", "English")
+setwd("/Users/ethen/ticket-system/ticket")
+Sys.setlocale("LC_ALL", "C")
+
 # read in the data
 ticketdata1 <- read.csv( "ticketdata.csv", stringsAsFactors = FALSE )
 
 ```
+
 ## Data Preprocessing
 - The column `CREATE_DATE` is the only column that requires preprocessing, the original format looks something like 2010/10/14 p.m. 11:25:58. Therefore we should turn it into a date, and also add twelve hours to the rows that have p.m. in them. The clean dataset is referred to as `ticketdata2`.
 ```{r}
@@ -172,10 +175,10 @@ purchasedata <- aggregate( PRICE ~ IDENTITY, ticketdata2, sum )
 head(purchasedata)
 
 ggplot( purchasedata, aes( PRICE ) ) + geom_bar( color = "black", fill = "lightskyblue2", width = 0.8 ) +
-    ggtitle( "Purchase Amount per Person" ) + xlab( "price" ) + theme( 
-        plot.title = element_text( size = 28, face = "bold" ),
-        axis.title = element_text( size = 18 ),
-        axis.text  = element_text( size = 12 ))  
+ggtitle( "Purchase Amount per Person" ) + xlab( "price" ) + theme( 
+    plot.title = element_text( size = 28, face = "bold" ),
+    axis.title = element_text( size = 18 ),
+    axis.text  = element_text( size = 12 ) )  
 ```
 - **Note:** Hmmm.... Most of the customers seems to spent under 10 thousand dollars when purchasing the tickets. Originally, I thought the amount would be bigger, because a lot of people might chose to purchase the tickets together to save the hassle of going through the purchasing process.
 
@@ -187,12 +190,12 @@ genderdata  <- data.frame( identity = ticketdata2$IDENTITY, price = genderprice,
 genderdata  <- unique(genderdata)
 head(genderdata)
 ggplot( genderdata, aes( gender, price, fill = gender ) ) + geom_boxplot() +
-    ggtitle( "Amount of Purchase by Gender" ) + theme(
-        plot.title   = element_text( size = 24, face = "bold" ),
-        axis.title   = element_text( size = 18 ),
-        axis.text    = element_text( size = 12 ),
-        legend.title = element_text( size = 16 ),
-        legend.text  = element_text( size = 14 ))
+ggtitle( "Amount of Purchase by Gender" ) + theme(
+    plot.title   = element_text( size = 24, face = "bold" ),
+    axis.title   = element_text( size = 18 ),
+    axis.text    = element_text( size = 12 ),
+    legend.title = element_text( size = 16 ),
+    legend.text  = element_text( size = 14 ) )
 
 ```
 - **Note:** From the boxplot, there doesn't seem to be much of a difference between the two genders when it comes to the amount spent on purchasing the tickets. Thought boys would be more fond of this concert, because it is after all Girls Generation. Still, we shouldn't confirm this notion straight away, since we don't know if the person who bought the tickets were actually the ones who went to the concert.

@@ -25,19 +25,15 @@ library(ggplot2)
 library(data.table)
 library(RColorBrewer)
 suppressMessages( library(dplyr) )
-```
 
-```
-## Warning: package 'dplyr' was built under R version 3.2.2
-```
-
-```r
 # set working environment
-setwd("C:/Users/ASUS/ticket-system/ticket")
-Sys.setlocale("LC_TIME", "English")
+setwd("/Users/ethen/ticket-system/ticket")
+Sys.setlocale("LC_ALL", "C")
+
 # read in the data
 ticketdata1 <- read.csv( "ticketdata.csv", stringsAsFactors = FALSE )
 ```
+
 ## Data Preprocessing
 - The column `CREATE_DATE` is the only column that requires preprocessing, the original format looks something like 2010/10/14 p.m. 11:25:58. Therefore we should turn it into a date, and also add twelve hours to the rows that have p.m. in them. The clean dataset is referred to as `ticketdata2`.
 
@@ -66,7 +62,7 @@ str(ticketdata2)
 ```
 
 ```
-## 'data.frame':	7069 obs. of  30 variables:
+## 'data.frame':	7069 obs. of  29 variables:
 ##  $ SERIAL_ID               : int  331 332 378 379 586 603 608 609 616 617 ...
 ##  $ ORDER_ID                : int  26237 26237 24923 24923 24930 26034 23352 23352 23603 23603 ...
 ##  $ TICKET_ITEM_ID          : int  52196 52195 46903 46902 46919 51814 43680 43678 44220 44219 ...
@@ -74,7 +70,7 @@ str(ticketdata2)
 ##  $ IDENTITY                : chr  "K12197" "K12197" "L22289" "L22289" ...
 ##  $ PROGRAM_ID              : int  11 11 11 11 11 11 11 11 11 11 ...
 ##  $ PROGRAM_NAME            : chr  "Girls Generation. THE lst ASIA TOUR Into the new world" "Girls Generation. THE lst ASIA TOUR Into the new world" "Girls Generation. THE lst ASIA TOUR Into the new world" "Girls Generation. THE lst ASIA TOUR Into the new world" ...
-##  $ PLAY_DATE               : chr  "2010/10/17" "2010/10/17" "2010/10/17" "2010/10/17" ...
+##  $ PLAY_DATE               : chr  "10/17/10" "10/17/10" "10/17/10" "10/17/10" ...
 ##  $ PLAY_TIME               : chr  "15:00" "15:00" "15:00" "15:00" ...
 ##  $ TICKET_BOOTH_RUNNING_NUM: int  41139 41138 39579 39580 39596 40890 36400 36398 36939 36938 ...
 ##  $ PRICE                   : int  1800 1800 1800 1800 1800 1800 3500 3500 3500 3500 ...
@@ -88,7 +84,6 @@ str(ticketdata2)
 ##  $ SHIPPING_ZIP1           : int  114 114 434 434 201 900 104 104 320 320 ...
 ##  $ SHIPPING_COUNTRY_ID1    : int  1 1 10 10 2 21 1 1 7 7 ...
 ##  $ SHIPPING_TOWN_ID1       : int  10 10 129 129 14 295 3 3 75 75 ...
-##  $ RECEIPT_TITLE           : chr  "" "" "" "" ...
 ##  $ SHIPPING_COUNTRY_ID2    : int  5 5 10 10 2 21 1 1 7 7 ...
 ##  $ SHIPPING_TOWN_ID2       : int  61 61 129 129 14 295 3 3 75 75 ...
 ##  $ SHIPPING_ZIP2           : int  300 300 434 434 201 900 104 104 320 320 ...
@@ -236,6 +231,14 @@ ticketsoldplot(ticketdata4_B1)
 # An example of the timeline format is provided below.
 timeline <- "2010-09-20 15:11:25"
 source("image.R")
+```
+
+```
+## Warning in Sys.setlocale("LC_TIME", "English"): OS reports request to set
+## locale to "English" cannot be honored
+```
+
+```r
 image(timeline)
 ```
 
@@ -263,10 +266,14 @@ head(purchasedata)
 
 ```r
 ggplot( purchasedata, aes( PRICE ) ) + geom_bar( color = "black", fill = "lightskyblue2", width = 0.8 ) +
-    ggtitle( "Purchase Amount per Person" ) + xlab( "price" ) + theme( 
-        plot.title = element_text( size = 28, face = "bold" ),
-        axis.title = element_text( size = 18 ),
-        axis.text  = element_text( size = 12 ))  
+ggtitle( "Purchase Amount per Person" ) + xlab( "price" ) + theme( 
+    plot.title = element_text( size = 28, face = "bold" ),
+    axis.title = element_text( size = 18 ),
+    axis.text  = element_text( size = 12 ) )  
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
 ```
 
 ![](ticket_files/figure-html/unnamed-chunk-9-1.png) 
@@ -294,12 +301,12 @@ head(genderdata)
 
 ```r
 ggplot( genderdata, aes( gender, price, fill = gender ) ) + geom_boxplot() +
-    ggtitle( "Amount of Purchase by Gender" ) + theme(
-        plot.title   = element_text( size = 24, face = "bold" ),
-        axis.title   = element_text( size = 18 ),
-        axis.text    = element_text( size = 12 ),
-        legend.title = element_text( size = 16 ),
-        legend.text  = element_text( size = 14 ))
+ggtitle( "Amount of Purchase by Gender" ) + theme(
+    plot.title   = element_text( size = 24, face = "bold" ),
+    axis.title   = element_text( size = 18 ),
+    axis.text    = element_text( size = 12 ),
+    legend.title = element_text( size = 16 ),
+    legend.text  = element_text( size = 14 ) )
 ```
 
 ![](ticket_files/figure-html/unnamed-chunk-10-1.png) 

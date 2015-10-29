@@ -3,11 +3,12 @@
 # timeline <- "2010-09-18 15:11:25"
 # timeline <- "2010-09-20 15:11:25"
 
-library(EBImage)
-library(dplyr)
+#library(EBImage)
 library(grid)
+library(dplyr)
+library(jpeg)
 
-setwd("C:/Users/ASUS/ticket-system/ticket")
+setwd("/Users/ethen/ticket-system/ticket")
 
 # --------------------------------------------
 # Steps for downloading the EBImage package
@@ -23,7 +24,7 @@ setwd("C:/Users/ASUS/ticket-system/ticket")
 Sys.setlocale("LC_TIME", "English")
 
 ticketdata4 <- read.csv ( "processdata.csv", stringsAsFactors = FALSE )
-seatimage   <- readImage("seat.jpg")
+seatimage   <- readJPEG("seat.jpg")
 # can use display(image) to view the picture
 
 

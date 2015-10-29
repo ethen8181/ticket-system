@@ -30,10 +30,13 @@ suppressWarnings( library(tidyr) )
 suppressWarnings( library(data.table) )
 suppressMessages( library(lubridate) )
 suppressWarnings( suppressMessages( library(dplyr) ) )
+
 # prevent encoding problems
 Sys.setlocale("LC_ALL", "C")
+
 # set working directory
 setwd("/Users/ethen/ticket-system/system")
+
 # read in the files
 files <- list.files( "data", full.names = TRUE )
 data  <- fread( files, stringsAsFactors = FALSE, header = TRUE, sep = ",", colClasses = "character" )
@@ -478,7 +481,7 @@ process <- lapply( unique(topdata$TicketCode), function(x)
 pdata <- do.call( rbind, process )
 # plot
 ggplot( pdata, aes( SoldDate, count, color = TicketCode ) ) + geom_line( size = 1 ) + 
-    labs( title = "Tickets Sold-Out Rate", y = "Percentage of Tickets Left", x = "Date" )
+labs( title = "Tickets Sold-Out Rate", y = "Percentage of Tickets Left", x = "Date" )
 ```
 
 ![](system_files/figure-html/unnamed-chunk-16-1.png) 

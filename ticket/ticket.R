@@ -9,7 +9,7 @@ library(tidyr)
 
 
 setwd("C:/Users/ASUS/ticket-system/ticket")
-Sys.setlocale("LC_TIME", "English")
+Sys.setlocale("LC_ALL", "C")
 
 ticketdata1 <- read.csv( "ticketdata.csv", stringsAsFactors = FALSE )
 

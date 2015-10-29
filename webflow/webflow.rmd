@@ -1,5 +1,5 @@
 ---
-title: "Exploratory Data Analysis on Webflow"
+title: "Exploratory Data Analysis on Webflow Data"
 output:
   html_document:
     keep_md: yes
@@ -21,9 +21,8 @@ This dataset comes from the 2010/10/1~ 2010/10/30 Google Analytics report of a t
 - The last four variables are all summations of numbers for all the webpages on the web.
 - **Tips:** The clean data should be only 720 rows, the raw data has more than that, and you should simply exclude them. And the `Day` column is messy, the hour should be 0~23 for each day.
 
-## Sypnosis
+## Synopsis
 For this exploratory data analysis, we will be looking at the behaviors of potential customers that browsed this website. The questions that we will be trying to answer are : Are the variables related? If they are then what do these relationships actually mean to the website. **An important thing to note is**, unless you have the webflow data of another ticket system website, then you should not look at these numbers and directly say that the numbers are good or bad. For example: Suppose that the bounce rate for this website is 90%, then in your mind you would probably be thinking "Wow, there must be something wrong with their website, most of users leave without doing anything on the site", but the thing is different types of websites have different bounce rate(e.g. Blogs usually have a bounce rate around 90%, because lots of people come to your site, read your post and leave without clicking anything).
-
 
 
 ## 1. Environment Settings
@@ -40,8 +39,7 @@ suppressMessages( library(xlsx)  )
 
 # set the working directory
 # setlocale , so make sure ouputs related to date are returned in English
-setwd("C:/Users/ASUS/ticket-system/webflow")
-Sys.setlocale("LC_TIME", "English")
+setwd("/Users/ethen/ticket-system/webflow")
 
 ```
 
@@ -134,16 +132,16 @@ timestring <- paste( as.character( peak1[3,1]$hour ), "~", datestring[2], sep = 
 timestring <- paste( datestring[1], timestring ) ; timestring
 # Step 5
 plot1 <- ggplot( viewdata1, aes( x = my_dates, y = View , color = Views  ) ) + geom_line( size = 1 ) +
-           annotate( "text", x = peak1[1,1], y = peak1[1,2]+4*10^3, label = as.character(peak1[1,1]) ) +
-           annotate( "text", x = peak1[2,1], y = peak1[2,2]+4*10^3, label = as.character(peak1[2,1]) ) +
-           annotate( "text", x = peak1[5,1], y = peak1[5,2]+4*10^3, label = as.character(peak1[5,1]) ) +
-           annotate( "text", x = peak1[3,1], y = peak1[3,2]+4*10^3, label = timestring ) +
-           annotate( "text", x = peak1[1,1]-30*60*60, y = 10^5, label = ">8", color = "blue", size = 6 ) +
-           geom_segment( x = as.numeric( peak1[1,1]-12*60*60 ), xend = as.numeric( peak1[1,1]-12*60*60 ), 
-           y = peak1[1,2], yend = peak1[1,3], size = 1, color = "blue", 
-           arrow = arrow( ends = "both", angle = 90, length = unit( 0.2, "cm" ) ) ) + 
-           ggtitle( "Total PageView of October" ) + xlab( "Month: October" ) + 
-           scale_x_datetime( labels = c( "4", "11", "18", "25", "Nov 1" ) ) + theme(
+         annotate( "text", x = peak1[1,1], y = peak1[1,2]+4*10^3, label = as.character(peak1[1,1]) ) +
+         annotate( "text", x = peak1[2,1], y = peak1[2,2]+4*10^3, label = as.character(peak1[2,1]) ) +
+         annotate( "text", x = peak1[5,1], y = peak1[5,2]+4*10^3, label = as.character(peak1[5,1]) ) +
+         annotate( "text", x = peak1[3,1], y = peak1[3,2]+4*10^3, label = timestring ) +
+         annotate( "text", x = peak1[1,1]-30*60*60, y = 10^5, label = ">8", color = "blue", size = 6 ) +
+         geom_segment( x = as.numeric( peak1[1,1]-12*60*60 ), xend = as.numeric( peak1[1,1]-12*60*60 ), 
+                       y = peak1[1,2], yend = peak1[1,3], size = 1, color = "blue", 
+                       arrow = arrow( ends = "both", angle = 90, length = unit( 0.2, "cm" ) ) ) + 
+         ggtitle( "Total PageView of October" ) + xlab( "Month: October" ) + 
+         scale_x_datetime( labels = c( "4", "11", "18", "25", "Nov 1" ) ) + theme(
              plot.title = element_text( size = 24, face = "bold" ),
              axis.title = element_text( size = 18 ),
              axis.text  = element_text( size = 12 ),
@@ -162,12 +160,12 @@ pageviewdata1 <- melt(pageviewdata, id.vars = "hour", value.name = "View")
 head(pageviewdata1)
 # Step 2 
 plot2 <- ggplot(pageviewdata1, aes( x = hour, y = View, color = variable ) ) + geom_line( size = 2 ) + 
-           geom_point( size = 5 ) + ggtitle( "Total PageView By Hour" ) + theme(
+         geom_point( size = 5 ) + ggtitle( "Total PageView By Hour" ) + theme(
              plot.title   = element_text( size = 24, face = "bold" ),
              axis.title   = element_text( size = 18 ),
              axis.text    = element_text( size = 12 ),
              legend.title = element_text( size = 16 ),
-             legend.text  = element_text( size = 14 )) 
+             legend.text  = element_text( size = 14 ) ) 
 
 ```
 
@@ -222,8 +220,8 @@ insightdata1$variable <- revalue( insightdata1$variable, c( "e" = "DurationTime"
 head(insightdata1)
 # plot the whole timeline of the data
 plot3 <- ggplot( insightdata1, aes( x = my_dates, y = Freq , color = variable  ) ) + geom_line( size = 1) + 
-           ggtitle( "Duration Time & Bounce Rate of October" ) + xlab( "Month: October" ) + 
-           scale_x_datetime( labels = c( "4", "11", "18", "25", "Nov 1" ) ) + theme(   
+         ggtitle( "Duration Time & Bounce Rate of October" ) + xlab( "Month: October" ) + 
+         scale_x_datetime( labels = c( "4", "11", "18", "25", "Nov 1" ) ) + theme(   
              plot.title   = element_text( size = 20, face = "bold" ),
              axis.title   = element_text( size = 18 ),
              axis.text    = element_text( size = 12 ),
@@ -237,12 +235,13 @@ plotdata1 <- melt(plotdata, id.vars = "hour", value.name = "Freq")
 head(plotdata1)
 # plot the aggregated by hour data
 plot4 <- ggplot(plotdata1, aes( x = hour, y = Freq, color = variable ) ) + geom_line( size = 2 ) + 
-           geom_point( size = 5 ) + ggtitle("Duration Time & Bounce Rate By Hour") + theme( 
+         geom_point( size = 5 ) + ggtitle("Duration Time & Bounce Rate By Hour") + theme( 
              plot.title   = element_text( size = 18, face = "bold" ),
              axis.title   = element_text( size = 18 ),
              axis.text    = element_text( size = 12 ),
              legend.title = element_text( size = 16 ),
-             legend.text  = element_text( size = 14 )) + scale_color_manual( values = c( "dodgerblue3", "firebrick3" ) )         
+             legend.text  = element_text( size = 14 ) ) + 
+         scale_color_manual( values = c( "dodgerblue3", "firebrick3" ) )         
 
 ```
 
@@ -259,12 +258,6 @@ insightdata[ insightdata$f>40, c(1,3) ]
 ```
 
 - The time resulting of high bounce rate(bigger than 40 in this case) seems to all occur around 6 a.m., but the funny thing is a lot of seems to happening towards the end of the month. As for whether this is the fact worth digging into the reasons behind this is left to be answered by the website itself.
-
-
-
-
-
-
 
 
 
