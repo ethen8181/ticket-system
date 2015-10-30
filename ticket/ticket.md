@@ -231,14 +231,6 @@ ticketsoldplot(ticketdata4_B1)
 # An example of the timeline format is provided below.
 timeline <- "2010-09-20 15:11:25"
 source("image.R")
-```
-
-```
-## Warning in Sys.setlocale("LC_TIME", "English"): OS reports request to set
-## locale to "English" cannot be honored
-```
-
-```r
 image(timeline)
 ```
 

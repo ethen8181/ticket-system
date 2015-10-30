@@ -21,7 +21,7 @@ setwd("/Users/ethen/ticket-system/ticket")
 # https://kohske.wordpress.com/2010/12/26/use-image-for-background-in-ggplot2/
 # R: Image Analysis using EBImage
 # http://www.r-bloggers.com/r-image-analysis-using-ebimage/
-Sys.setlocale("LC_TIME", "English")
+
 
 ticketdata4 <- read.csv ( "processdata.csv", stringsAsFactors = FALSE )
 seatimage   <- readJPEG("seat.jpg")
