@@ -25,11 +25,11 @@ The dataset used for this report is the ticket selling record for a ticket syste
 
 ```r
 # load library
+library(tidyr)
+library(dplyr)
 library(ggplot2)
-suppressWarnings( library(tidyr) )
-suppressWarnings( library(data.table) )
-suppressMessages( library(lubridate) )
-suppressWarnings( suppressMessages( library(dplyr) ) )
+library(lubridate)
+library(data.table)
 
 # prevent encoding problems
 Sys.setlocale("LC_ALL", "C")
@@ -262,9 +262,9 @@ For this section, we will like look at things from a geographic perspective. For
 
 - A quick review in case you've forgotten. `highdata` contains the TicketCode that generated more than 10^7 to the total revenue and only the records where the tickets were sold online (TicketSiteCode = 88888 ). 
 
-- `zipcity` For this section, we will fist add a new column to `highdata`. We'll extract the first digit of the [Zipcode](http://www.easytravel.com.tw/postid_search.asp) column, the first digit represents the city and the rest are which district in the city, but here we're just going to look at the zipcode from the city-level. 
+- `zipcity` For this section, we will first add a new column to `highdata`. We'll extract the first digit of the [Zipcode](http://www.easytravel.com.tw/postid_search.asp) column, which represents the city and the rest are which district in the city, but here we're just going to look at the zipcode from the city-level. 
 - `zipcodedata` Since the ZipCode column has some noise in them for reasons beyond knowledge (e.g. NA, English letters, random punctuation marks ), so for analyzing convenience, we'll simply convert them into numbers and exclude the ones that were coerced to NAs in the data type transformation process.
-- The suppressWarnings function below is used just to avoid printing the warning messages in the report, it does not have affect on the result.
+- The suppressWarnings function below is used just to avoid printing the warning messages in the report, it does not have any affect on the result.
 
 
 ```r
@@ -303,7 +303,7 @@ chisq.test(gender_zip)
 ## X-squared = 105.76, df = 9, p-value < 2.2e-16
 ```
 
-- **Note:** OK, the p-value is below .05, this provides strong evidence to suggest that when looking at the customers' behavior from a geographic viewpoint, men and women have difference preferences towards concert tickets.
+- **Note:** OK, the p-value is below .05, this provides strong evidence to suggest that when looking at the customers' behavior from a geographic viewpoint, men and women have different preferences towards concert tickets.
 
 That was that, but we're still not finished yet. Let's investigate the contingecy table between each concert and zipcode. This time, instead of looking at proportions between cities, we will look at them from regions. We will combine some zipcodes together so that the data will reflect the tickets that were mailed to north, mid, south or east part of Taiwan. The detailed process for this part is listed below
 
@@ -512,18 +512,18 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] reshape2_1.4.1     RColorBrewer_1.1-2 dplyr_0.4.3       
-## [4] lubridate_1.3.3    data.table_1.9.6   tidyr_0.3.1       
-## [7] ggplot2_1.0.1     
+## [1] reshape2_1.4.1     RColorBrewer_1.1-2 data.table_1.9.6  
+## [4] lubridate_1.3.3    ggplot2_1.0.1      dplyr_0.4.3       
+## [7] tidyr_0.3.1       
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rcpp_0.12.1      knitr_1.11       magrittr_1.5     MASS_7.3-43     
 ##  [5] munsell_0.4.2    colorspace_1.2-6 R6_2.1.1         stringr_1.0.0   
 ##  [9] plyr_1.8.3       tools_3.2.2      parallel_3.2.2   grid_3.2.2      
 ## [13] gtable_0.1.2     DBI_0.3.1        htmltools_0.2.6  lazyeval_0.1.10 
-## [17] assertthat_0.1   yaml_2.1.13      digest_0.6.8     formatR_1.2.1   
+## [17] yaml_2.1.13      assertthat_0.1   digest_0.6.8     formatR_1.2.1   
 ## [21] memoise_0.2.1    evaluate_0.8     rmarkdown_0.8    labeling_0.3    
-## [25] stringi_0.5-5    scales_0.3.0     chron_2.3-47     proto_0.3-10
+## [25] stringi_1.0-1    scales_0.3.0     chron_2.3-47     proto_0.3-10
 ```
 
 

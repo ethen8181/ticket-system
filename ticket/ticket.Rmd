@@ -141,6 +141,7 @@ ticketdata4_B1 <- ticketdata4[ grep( "FloorB1",  ticketdata4$Seat_Type ), ]
 ```
 
 ```{r, fig.height = 10, fig.width = 20}
+
 # plot for the section that are on Floor 2
 ticketsoldplot(ticketdata4_2f)
 # plot for the section that are on Floor 3
@@ -170,11 +171,12 @@ image(timeline)
 
 #### 2.1. A histgram of the amount of purchases per person
 - Calculate the amount of purchase for each person. Save this data to `purchasedata`.
-```{r, fig.height = 10, fig.width = 20}
+```{r, fig.height = 10, fig.width = 20, message=FALSE}
 purchasedata <- aggregate( PRICE ~ IDENTITY, ticketdata2, sum )
 head(purchasedata)
 
-ggplot( purchasedata, aes( PRICE ) ) + geom_bar( color = "black", fill = "lightskyblue2", width = 0.8 ) +
+ggplot( purchasedata, aes( PRICE ) ) + 
+geom_bar( color = "black", fill = "lightskyblue2", width = 0.8 ) +
 ggtitle( "Purchase Amount per Person" ) + xlab( "price" ) + theme( 
     plot.title = element_text( size = 28, face = "bold" ),
     axis.title = element_text( size = 18 ),

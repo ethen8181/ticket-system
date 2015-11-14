@@ -108,11 +108,11 @@ img {
 <div id="ii.-environment-setting" class="section level2">
 <h2>II. Environment Setting</h2>
 <pre class="r"><code># load library
+library(tidyr)
+library(dplyr)
 library(ggplot2)
-suppressWarnings( library(tidyr) )
-suppressWarnings( library(data.table) )
-suppressMessages( library(lubridate) )
-suppressWarnings( suppressMessages( library(dplyr) ) )
+library(lubridate)
+library(data.table)
 
 # prevent encoding problems
 Sys.setlocale(&quot;LC_ALL&quot;, &quot;C&quot;)
@@ -290,9 +290,9 @@ labs( y = &quot;Age Levels&quot;,
 <p>For this section, we will like look at things from a geographic perspective. For those people that have purchased the concert tickets online, where do they live? We assume that the zipcode should reveal some thoughts on that.</p>
 <ul>
 <li><p>A quick review in case you’ve forgotten. <code>highdata</code> contains the TicketCode that generated more than 10^7 to the total revenue and only the records where the tickets were sold online (TicketSiteCode = 88888 ).</p></li>
-<li><code>zipcity</code> For this section, we will fist add a new column to <code>highdata</code>. We’ll extract the first digit of the <a href="http://www.easytravel.com.tw/postid_search.asp">Zipcode</a> column, the first digit represents the city and the rest are which district in the city, but here we’re just going to look at the zipcode from the city-level.</li>
+<li><code>zipcity</code> For this section, we will first add a new column to <code>highdata</code>. We’ll extract the first digit of the <a href="http://www.easytravel.com.tw/postid_search.asp">Zipcode</a> column, which represents the city and the rest are which district in the city, but here we’re just going to look at the zipcode from the city-level.</li>
 <li><code>zipcodedata</code> Since the ZipCode column has some noise in them for reasons beyond knowledge (e.g. NA, English letters, random punctuation marks ), so for analyzing convenience, we’ll simply convert them into numbers and exclude the ones that were coerced to NAs in the data type transformation process.</li>
-<li><p>The suppressWarnings function below is used just to avoid printing the warning messages in the report, it does not have affect on the result.</p></li>
+<li><p>The suppressWarnings function below is used just to avoid printing the warning messages in the report, it does not have any affect on the result.</p></li>
 </ul>
 <pre class="r"><code># convert the zipcity to numeric to elevaluate only the ones from 0-9
 suppressWarnings( highdata$zipcity &lt;- substring( highdata$ZipCode, 1, 1 ) %&gt;% as.numeric() )
@@ -318,7 +318,7 @@ addmargins(gender_zip)</code></pre>
 ## data:  gender_zip
 ## X-squared = 105.76, df = 9, p-value &lt; 2.2e-16</code></pre>
 <ul>
-<li><strong>Note:</strong> OK, the p-value is below .05, this provides strong evidence to suggest that when looking at the customers’ behavior from a geographic viewpoint, men and women have difference preferences towards concert tickets.</li>
+<li><strong>Note:</strong> OK, the p-value is below .05, this provides strong evidence to suggest that when looking at the customers’ behavior from a geographic viewpoint, men and women have different preferences towards concert tickets.</li>
 </ul>
 <p>That was that, but we’re still not finished yet. Let’s investigate the contingecy table between each concert and zipcode. This time, instead of looking at proportions between cities, we will look at them from regions. We will combine some zipcodes together so that the data will reflect the tickets that were mailed to north, mid, south or east part of Taiwan. The detailed process for this part is listed below</p>
 <ul>
@@ -479,18 +479,18 @@ labs( title = &quot;Tickets Sold-Out Rate&quot;, y = &quot;Percentage of Tickets
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] reshape2_1.4.1     RColorBrewer_1.1-2 dplyr_0.4.3       
-## [4] lubridate_1.3.3    data.table_1.9.6   tidyr_0.3.1       
-## [7] ggplot2_1.0.1     
+## [1] reshape2_1.4.1     RColorBrewer_1.1-2 data.table_1.9.6  
+## [4] lubridate_1.3.3    ggplot2_1.0.1      dplyr_0.4.3       
+## [7] tidyr_0.3.1       
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rcpp_0.12.1      knitr_1.11       magrittr_1.5     MASS_7.3-43     
 ##  [5] munsell_0.4.2    colorspace_1.2-6 R6_2.1.1         stringr_1.0.0   
 ##  [9] plyr_1.8.3       tools_3.2.2      parallel_3.2.2   grid_3.2.2      
 ## [13] gtable_0.1.2     DBI_0.3.1        htmltools_0.2.6  lazyeval_0.1.10 
-## [17] assertthat_0.1   yaml_2.1.13      digest_0.6.8     formatR_1.2.1   
+## [17] yaml_2.1.13      assertthat_0.1   digest_0.6.8     formatR_1.2.1   
 ## [21] memoise_0.2.1    evaluate_0.8     rmarkdown_0.8    labeling_0.3    
-## [25] stringi_0.5-5    scales_0.3.0     chron_2.3-47     proto_0.3-10</code></pre>
+## [25] stringi_1.0-1    scales_0.3.0     chron_2.3-47     proto_0.3-10</code></pre>
 </div>
 
 

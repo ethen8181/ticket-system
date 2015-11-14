@@ -29,14 +29,14 @@ The dataset used for this report is the ticket selling record for a ticket syste
 - `URL` Adding http://www.ticket.com.tw/ before the url should lead you to the correct website.
 
 ## II. Environment Setting 
-```{r, results = "hide"}
+```{r, results = "hide", message=FALSE, warning=FALSE}
 
 # load library
+library(tidyr)
+library(dplyr)
 library(ggplot2)
-suppressWarnings( library(tidyr) )
-suppressWarnings( library(data.table) )
-suppressMessages( library(lubridate) )
-suppressWarnings( suppressMessages( library(dplyr) ) )
+library(lubridate)
+library(data.table)
 
 # prevent encoding problems
 Sys.setlocale("LC_ALL", "C")
@@ -207,9 +207,9 @@ For this section, we will like look at things from a geographic perspective. For
 
 - A quick review in case you've forgotten. `highdata` contains the TicketCode that generated more than 10^7 to the total revenue and only the records where the tickets were sold online (TicketSiteCode = 88888 ). 
 
-- `zipcity` For this section, we will fist add a new column to `highdata`. We'll extract the first digit of the [Zipcode](http://www.easytravel.com.tw/postid_search.asp) column, the first digit represents the city and the rest are which district in the city, but here we're just going to look at the zipcode from the city-level. 
+- `zipcity` For this section, we will first add a new column to `highdata`. We'll extract the first digit of the [Zipcode](http://www.easytravel.com.tw/postid_search.asp) column, which represents the city and the rest are which district in the city, but here we're just going to look at the zipcode from the city-level. 
 - `zipcodedata` Since the ZipCode column has some noise in them for reasons beyond knowledge (e.g. NA, English letters, random punctuation marks ), so for analyzing convenience, we'll simply convert them into numbers and exclude the ones that were coerced to NAs in the data type transformation process.
-- The suppressWarnings function below is used just to avoid printing the warning messages in the report, it does not have affect on the result.
+- The suppressWarnings function below is used just to avoid printing the warning messages in the report, it does not have any affect on the result.
 
 ```{r}
 
@@ -234,7 +234,7 @@ chisq.test(gender_zip)
 
 ```
 
-- **Note:** OK, the p-value is below .05, this provides strong evidence to suggest that when looking at the customers' behavior from a geographic viewpoint, men and women have difference preferences towards concert tickets.
+- **Note:** OK, the p-value is below .05, this provides strong evidence to suggest that when looking at the customers' behavior from a geographic viewpoint, men and women have different preferences towards concert tickets.
 
 That was that, but we're still not finished yet. Let's investigate the contingecy table between each concert and zipcode. This time, instead of looking at proportions between cities, we will look at them from regions. We will combine some zipcodes together so that the data will reflect the tickets that were mailed to north, mid, south or east part of Taiwan. The detailed process for this part is listed below
 

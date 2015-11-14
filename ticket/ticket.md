@@ -257,15 +257,12 @@ head(purchasedata)
 ```
 
 ```r
-ggplot( purchasedata, aes( PRICE ) ) + geom_bar( color = "black", fill = "lightskyblue2", width = 0.8 ) +
+ggplot( purchasedata, aes( PRICE ) ) + 
+geom_bar( color = "black", fill = "lightskyblue2", width = 0.8 ) +
 ggtitle( "Purchase Amount per Person" ) + xlab( "price" ) + theme( 
     plot.title = element_text( size = 28, face = "bold" ),
     axis.title = element_text( size = 18 ),
     axis.text  = element_text( size = 12 ) )  
-```
-
-```
-## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
 ```
 
 ![](ticket_files/figure-html/unnamed-chunk-9-1.png) 
