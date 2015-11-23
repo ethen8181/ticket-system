@@ -69,7 +69,7 @@ image <- function( timeline )
     
     # combine the count data
     countdata <- do.call( rbind, tmp1 )
-    
+
     # deal with the Seat_Type that have not been included (The specified time is before that
     # ticket is being sold)
     if( nrow(countdata) != n_distinct(ticketdata4$Seat_Type) )

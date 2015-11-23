@@ -149,7 +149,7 @@ sapply( high, function(x)
 ## 0000010329 
 ##       TRUE
 ```
-- **Note:** Based on the results of the t-test, it seems that for the 7 TicketCode that attributed to more than 10^7 ticket revenues, about half of them are impartial for the average amount of money spent on purchasing tickets between male and female. But that was the average per person, what about the total amount ?
+- **Note:** Based on the results of the t-test, it seems that for the 7 TicketCode that attributed to more than 10^7 ticket revenues, about half of them are impartial for the average amount of money spent on purchasing tickets between male and female. But that was the average per person, what about the total amount?
 
 
 ```r
@@ -166,7 +166,7 @@ table(highdata$Gender)
 ```r
 # total amount of money spent of tickets by gender
 aggregate( as.numeric(SoldPrice) ~ TicketCode + Gender, data = highdata, FUN = sum ) %>%
-    arrange( TicketCode )
+arrange( TicketCode )
 ```
 
 ```
@@ -202,14 +202,10 @@ highdata[ , age := year(today()) - as.numeric(BirthYear) ]
 ```r
 # extract one of the ticket concert and look at its age distribution 
 agedata <- highdata %>% filter( TicketCode == high[1] ) %>% select( SoldPrice, Gender, age )
+
 # age distribution histogram by gender
 ggplot( agedata, aes( age, fill = Gender ) ) + geom_histogram() + facet_grid( ~ Gender ) + 
-    ggtitle("Number of Tickets Purchased For Different Age Levels and Genders")
-```
-
-```
-## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+ggtitle("Number of Tickets Purchased For Different Age Levels and Genders")
 ```
 
 ![](system_files/figure-html/unnamed-chunk-8-1.png) 
@@ -270,8 +266,10 @@ For this section, we will like look at things from a geographic perspective. For
 ```r
 # convert the zipcity to numeric to elevaluate only the ones from 0-9
 suppressWarnings( highdata$zipcity <- substring( highdata$ZipCode, 1, 1 ) %>% as.numeric() )
+
 # exclude the NA rows from highdata
 zipcodedata <- highdata[ complete.cases(highdata), ]
+
 # have a glimpse at the contingency table bwteen zipcity and gender
 gender_zip <- with( zipcodedata, table( Gender, zipcity ) )
 addmargins(gender_zip)
@@ -316,8 +314,10 @@ That was that, but we're still not finished yet. Let's investigate the contingec
 # Step 1
 ticket_zip <- with( highdata, table( TicketCode, zipcity ) )
 ticket_zip_df <- data.frame(ticket_zip) %>% spread( zipcity, Freq )
+
 # Step 2
 geographic <- list( c( "1","2" ), c( "3","4","5" ), c( "6","7","8" ), c( "9","0" ) )
+
 # Step 3
 # combine it by geographic
 combine <- lapply( geographic, function(x)
@@ -325,9 +325,11 @@ combine <- lapply( geographic, function(x)
     subset( ticket_zip_df, select = x ) %>%
         apply( 1, sum )
 })
+
 # also add the TicketCode column back
 combined_ticket_zip <- cbind( ticket_zip_df$TicketCode, 
                               data.frame( do.call( cbind, combine ) ) )
+
 # give descriptive names to each column
 names(combined_ticket_zip) <- c( "TicketCode", "North", "Mid", "South", "East" )
 combined_ticket_zip
@@ -354,6 +356,7 @@ To get the actual numbers of proportion of tickets that were mailed to each regi
 # convert data frame into long format to get the table
 longformat <- gather( combined_ticket_zip, "Region", "Freq", -1 )
 longtable  <- xtabs( Freq ~ TicketCode + Region, data = longformat )
+
 # use prop.table
 prop.table( longtable, 1 )
 ```
@@ -372,7 +375,7 @@ prop.table( longtable, 1 )
 
 ```r
 # load the R file that contains the function that does the plotting
-suppressMessages( source("mosaic_plot.R") )
+source("mosaic_plot.R")
 mosaic_plot(combined_ticket_zip)
 ```
 
@@ -464,6 +467,7 @@ string <- gsub( "(.*)\\s.*\\s(.*)\\.[0]{3}", "\\1 \\2",
 # Step 2
 topdata$SoldDate <- ymd_hms(string)
 topdata$SoldTime <- NULL
+
 # Step 3
 topdata <- topdata[ order(topdata$SoldDate), ] %>% 
                filter( !topdata$SoldPrice %in% c( 0, 10 ) )
@@ -479,6 +483,7 @@ process <- lapply( unique(topdata$TicketCode), function(x)
     return(subdata)
 })    
 pdata <- do.call( rbind, process )
+
 # plot
 ggplot( pdata, aes( SoldDate, count, color = TicketCode ) ) + geom_line( size = 1 ) + 
 labs( title = "Tickets Sold-Out Rate", y = "Percentage of Tickets Left", x = "Date" )
@@ -517,7 +522,7 @@ sessionInfo()
 ## [7] tidyr_0.3.1       
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.12.1      knitr_1.11       magrittr_1.5     MASS_7.3-43     
+##  [1] Rcpp_0.12.2      knitr_1.11       magrittr_1.5     MASS_7.3-43     
 ##  [5] munsell_0.4.2    colorspace_1.2-6 R6_2.1.1         stringr_1.0.0   
 ##  [9] plyr_1.8.3       tools_3.2.2      parallel_3.2.2   grid_3.2.2      
 ## [13] gtable_0.1.2     DBI_0.3.1        htmltools_0.2.6  lazyeval_0.1.10 

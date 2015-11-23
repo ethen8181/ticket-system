@@ -19,12 +19,10 @@ For this essay, we would like to answer two main question.
 
 ```r
 # load library
-library(plyr)
 library(tidyr)
+library(dplyr)
 library(ggplot2)
 library(data.table)
-library(RColorBrewer)
-suppressMessages( library(dplyr) )
 
 # set working environment
 setwd("/Users/ethen/ticket-system/ticket")

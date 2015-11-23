@@ -22,14 +22,12 @@ For this essay, we would like to answer two main question.
 2. See if there are differences between male and female when it comes to the amount they spent on the tickets.
 
 ## Environment Setting
-```{r, results = "hide"}
+```{r, results = "hide", warning=FALSE, message=FALSE}
 # load library
-library(plyr)
 library(tidyr)
+library(dplyr)
 library(ggplot2)
 library(data.table)
-library(RColorBrewer)
-suppressMessages( library(dplyr) )
 
 # set working environment
 setwd("/Users/ethen/ticket-system/ticket")

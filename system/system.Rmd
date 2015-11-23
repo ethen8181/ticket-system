@@ -137,14 +137,14 @@ sapply( high, function(x)
 })
 
 ```
-- **Note:** Based on the results of the t-test, it seems that for the `r length(high)` TicketCode that attributed to more than 10^7 ticket revenues, about half of them are impartial for the average amount of money spent on purchasing tickets between male and female. But that was the average per person, what about the total amount ?
+- **Note:** Based on the results of the t-test, it seems that for the `r length(high)` TicketCode that attributed to more than 10^7 ticket revenues, about half of them are impartial for the average amount of money spent on purchasing tickets between male and female. But that was the average per person, what about the total amount?
 
 ```{r}
 # gender distribution
 table(highdata$Gender)
 # total amount of money spent of tickets by gender
 aggregate( as.numeric(SoldPrice) ~ TicketCode + Gender, data = highdata, FUN = sum ) %>%
-    arrange( TicketCode )
+arrange( TicketCode )
 
 ```
 - **Note:** Wow! Despite the previous analysis told us that on average, there wasn't a clear bias toward which genders spends more on buying tickets, the consumers/users for this ticket system still seems to be slightly dominated by females. That is, tickets that were purchased by female were almost two times higher than that of male ( Inference from the table above ) and they account for more of the total ticket revenue ( Looking at the aggregated data above, the statement is true for the all 7 top-saling tickets ). 
@@ -159,13 +159,14 @@ highdata[ , age := year(today()) - as.numeric(BirthYear) ]
 
 ```
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 
 # extract one of the ticket concert and look at its age distribution 
 agedata <- highdata %>% filter( TicketCode == high[1] ) %>% select( SoldPrice, Gender, age )
+
 # age distribution histogram by gender
 ggplot( agedata, aes( age, fill = Gender ) ) + geom_histogram() + facet_grid( ~ Gender ) + 
-    ggtitle("Number of Tickets Purchased For Different Age Levels and Genders")
+ggtitle("Number of Tickets Purchased For Different Age Levels and Genders")
 
 ```
 
@@ -215,8 +216,10 @@ For this section, we will like look at things from a geographic perspective. For
 
 # convert the zipcity to numeric to elevaluate only the ones from 0-9
 suppressWarnings( highdata$zipcity <- substring( highdata$ZipCode, 1, 1 ) %>% as.numeric() )
+
 # exclude the NA rows from highdata
 zipcodedata <- highdata[ complete.cases(highdata), ]
+
 # have a glimpse at the contingency table bwteen zipcity and gender
 gender_zip <- with( zipcodedata, table( Gender, zipcity ) )
 addmargins(gender_zip)
@@ -247,8 +250,10 @@ That was that, but we're still not finished yet. Let's investigate the contingec
 # Step 1
 ticket_zip <- with( highdata, table( TicketCode, zipcity ) )
 ticket_zip_df <- data.frame(ticket_zip) %>% spread( zipcity, Freq )
+
 # Step 2
 geographic <- list( c( "1","2" ), c( "3","4","5" ), c( "6","7","8" ), c( "9","0" ) )
+
 # Step 3
 # combine it by geographic
 combine <- lapply( geographic, function(x)
@@ -256,9 +261,11 @@ combine <- lapply( geographic, function(x)
     subset( ticket_zip_df, select = x ) %>%
         apply( 1, sum )
 })
+
 # also add the TicketCode column back
 combined_ticket_zip <- cbind( ticket_zip_df$TicketCode, 
                               data.frame( do.call( cbind, combine ) ) )
+
 # give descriptive names to each column
 names(combined_ticket_zip) <- c( "TicketCode", "North", "Mid", "South", "East" )
 combined_ticket_zip
@@ -270,15 +277,17 @@ combined_ticket_zip
 To get the actual numbers of proportion of tickets that were mailed to each region for each concert, we will use the prop.table function, but you probably have to convert the data frame back to a table to use it, and we will also use a mosaic plot to visualize this table. For those of you who have never heard of it, it is a plot that is widely used in many marketing departments. This chart is used to show proportion of a product market by region, and proportion of region by product.
 - The function the created the mosaic plot is sourced in to prevent adding too many unneccessary information to the report. For those that are interested and wish to revise it for personal use, it's here at this [link](https://github.com/ethen8181/ticket-system/blob/master/system/mosaic_plot.R).
 
-```{r, fig.height = 8, fig.width = 15}
+```{r, fig.height = 8, fig.width = 15, message=FALSE, warning=FALSE}
 
 # convert data frame into long format to get the table
 longformat <- gather( combined_ticket_zip, "Region", "Freq", -1 )
 longtable  <- xtabs( Freq ~ TicketCode + Region, data = longformat )
+
 # use prop.table
 prop.table( longtable, 1 )
+
 # load the R file that contains the function that does the plotting
-suppressMessages( source("mosaic_plot.R") )
+source("mosaic_plot.R")
 mosaic_plot(combined_ticket_zip)
 
 ```
@@ -341,6 +350,7 @@ string <- gsub( "(.*)\\s.*\\s(.*)\\.[0]{3}", "\\1 \\2",
 # Step 2
 topdata$SoldDate <- ymd_hms(string)
 topdata$SoldTime <- NULL
+
 # Step 3
 topdata <- topdata[ order(topdata$SoldDate), ] %>% 
                filter( !topdata$SoldPrice %in% c( 0, 10 ) )
@@ -356,6 +366,7 @@ process <- lapply( unique(topdata$TicketCode), function(x)
     return(subdata)
 })    
 pdata <- do.call( rbind, process )
+
 # plot
 ggplot( pdata, aes( SoldDate, count, color = TicketCode ) ) + geom_line( size = 1 ) + 
 labs( title = "Tickets Sold-Out Rate", y = "Percentage of Tickets Left", x = "Date" )
